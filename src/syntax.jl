@@ -1,9 +1,5 @@
 type Identity end
 
-immutable Constant{T}
-  value::T
-end
-
 function inputsm(args)
   graph = Vertex{Any}(Identity())
   bindings = d()
@@ -28,12 +24,11 @@ function latenodes(exs)
   return bindings
 end
 
-# graphm(bindings, node) = node
-graphm(bindings, node) = Vertex{Any}(Constant(node))
+graphm(bindings, node) = Vertex{Any}(node)
 graphm(bindings, ex::Symbol) =
   haskey(bindings, ex) ?
     graphm(bindings, bindings[ex]) :
-    Vertex{Any}(Constant(ex))
+    Vertex{Any}(ex)
 graphm(bindings, node::Vertex) = node
 graphm(bindings, node::Needle) = node
 graphm(bindings, node::LateVertex) = node.val
