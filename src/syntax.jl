@@ -57,27 +57,30 @@ function fillnodes!(bindings)
   return bindings
 end
 
+function graphm(bindings, exs::Vector)
+  result = extractresult!(exs)
+  merge!(bindings, latenodes(exs))
+  fillnodes!(bindings)
+  output = graphm(bindings, result)
+end
+
+graphm(x) = graphm(d(), x)
+
 type SyntaxGraph
   args::Vector{Symbol}
   input::Vertex{Any}
   output::Vertex{Any}
 end
 
-macro flow(ex)
-  @capture(shortdef(ex), name_(args__) = exs__) ||
-    error("@flow requires a function definition")
-  bindings = d()
+function flow_func(ex)
+  @capture(shortdef(ex), name_(args__) = exs__)
   input, bs = inputsm(args)
-  merge!(bindings, bs)
-  result = extractresult!(exs)
-  merge!(bindings, latenodes(exs))
-  fillnodes!(bindings)
-  output = graphm(bindings, result)
+  output = graphm(bs, exs)
   :($(esc(name)) = $(SyntaxGraph(args, input, output)))
 end
 
-@flow function foo(x, y)
-  hidden = tanh(x)
-  sum = x + exp(y) + hidden
-  σ(sum) + hidden
+macro flow(ex)
+  isdef(ex) && return flow_func(ex)
+  @capture(ex, exs__)
+  graph = graphm(exs)
 end
