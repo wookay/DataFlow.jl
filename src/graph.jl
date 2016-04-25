@@ -32,6 +32,7 @@ thread!(v::Vertex, xs...) = reduce(thread!, v, xs)
 
 # Processing
 
+"Gets the immediate neighbours (input and output nodes) of a vertex."
 function neighbours(v::Vertex)
   vs = Set{typeof(v)}()
   for v′ in outputs(v) push!(vs, v′) end
@@ -49,6 +50,7 @@ function walk(f, v::Vertex, children, seen = Set{typeof(v)}())
   return
 end
 
+"Applies `f` to each vertex in the graph."
 foreach(f, v::Vertex) = walk(f, v, neighbours)
 
 function Base.length(v::Vertex)
@@ -57,9 +59,11 @@ function Base.length(v::Vertex)
   return n
 end
 
+"`reaching(f, v)` applies `f` to every node dependent on `v`."
 reaching(f, v::Vertex, seen = Set{typeof(v)}()) =
   map(v->walk(f, v, outputs, seen), outputs(v))
 
+"`reaching(v)` collects the set of all nodes dependent on `v`."
 function reaching(v::Vertex)
   result = Set{typeof(v)}()
   reaching(v) do v
@@ -68,6 +72,7 @@ function reaching(v::Vertex)
   return result
 end
 
+"Detects cycles in a graph."
 function iscyclic(v::Vertex)
   cyclic = false
   foreach(v) do v
