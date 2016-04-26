@@ -57,8 +57,31 @@ end
 graphm(x) = graphm(d(), x)
 
 # Graph → Syntax
+# TODO: islands, multiple outputs
 
-# ...
+function syntax!(v::Vertex, ex, bindings = d())
+  haskey(bindings, v) && return bindings[v]
+  x = () -> Expr(:call, value(v), [syntax!(v, ex, bindings) for v in inputs(v)]...)
+  if length(outputs(v)) > 1 # FIXME
+    @gensym vertex
+    bindings[v] = vertex
+    push!(ex.args, :($vertex = $(x())))
+    return vertex
+  else
+    x′ = x()
+    isfinal(v) && push!(ex.args, x′)
+    return x′
+  end
+end
+
+syntax!(n::Needle, ex, bindings = d()) =
+  syntax!(n.vertex, ex, bindings) # FIXME
+
+function syntax(v::Vertex)
+  ex :(;)
+  syntax!(v, ex)
+  ex
+end
 
 # Function / expression macros
 
