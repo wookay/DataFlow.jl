@@ -78,7 +78,7 @@ syntax!(n::Needle, ex, bindings = d()) =
   syntax!(n.vertex, ex, bindings) # FIXME
 
 function syntax(v::Vertex)
-  ex :(;)
+  ex = :(;)
   syntax!(v, ex)
   ex
 end
