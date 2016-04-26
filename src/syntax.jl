@@ -88,26 +88,24 @@ end
 type Identity end
 
 function inputsm(args)
-  graph = Vertex{Any}(Identity())
   bindings = d()
-  for (i, arg) in enumerate(args)
+  for arg in args
     isa(arg, Symbol) || error("invalid argument $arg")
-    bindings[arg] = Needle(graph, i)
+    bindings[arg] = Vertex{Any}(arg)
   end
-  return graph, bindings
+  return bindings
 end
 
 type SyntaxGraph
   args::Vector{Symbol}
-  input::Vertex{Any}
   output::Vertex{Any}
 end
 
 function flow_func(ex)
   @capture(shortdef(ex), name_(args__) = exs__)
-  input, bs = inputsm(args)
+  bs = inputsm(args)
   output = graphm(bs, exs)
-  :($(esc(name)) = $(SyntaxGraph(args, input, output)))
+  :($(esc(name)) = $(SyntaxGraph(args, output)))
 end
 
 macro flow(ex)
