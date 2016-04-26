@@ -1,14 +1,4 @@
-type Identity end
-
-function inputsm(args)
-  graph = Vertex{Any}(Identity())
-  bindings = d()
-  for (i, arg) in enumerate(args)
-    isa(arg, Symbol) || error("invalid argument $arg")
-    bindings[arg] = Needle(graph, i)
-  end
-  return graph, bindings
-end
+# Syntax → Graph
 
 type LateVertex{T}
   val::Vertex{T}
@@ -66,6 +56,24 @@ end
 
 graphm(x) = graphm(d(), x)
 
+# Graph → Syntax
+
+# ...
+
+# Function / expression macros
+
+type Identity end
+
+function inputsm(args)
+  graph = Vertex{Any}(Identity())
+  bindings = d()
+  for (i, arg) in enumerate(args)
+    isa(arg, Symbol) || error("invalid argument $arg")
+    bindings[arg] = Needle(graph, i)
+  end
+  return graph, bindings
+end
+
 type SyntaxGraph
   args::Vector{Symbol}
   input::Vertex{Any}
@@ -82,5 +90,5 @@ end
 macro flow(ex)
   isdef(ex) && return flow_func(ex)
   @capture(ex, exs__)
-  graph = graphm(exs)
+  graphm(exs)
 end
