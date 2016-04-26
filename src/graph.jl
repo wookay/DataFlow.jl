@@ -28,6 +28,8 @@ end
 
 thread!(to::Vertex, from::Vertex) = thread!(to, Needle(from, 1))
 
+thread!{T}(to::Vertex{T}, from) = thread!(to, Vertex{T}(from))
+
 thread!(v::Vertex, xs...) = reduce(thread!, v, xs)
 
 # Processing

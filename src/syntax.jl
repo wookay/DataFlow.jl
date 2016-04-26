@@ -14,13 +14,9 @@ function latenodes(exs)
   return bindings
 end
 
-graphm(bindings, node) = Vertex{Any}(node)
+graphm(bindings, node) = node
 graphm(bindings, ex::Symbol) =
-  haskey(bindings, ex) ?
-    graphm(bindings, bindings[ex]) :
-    Vertex{Any}(ex)
-graphm(bindings, node::Vertex) = node
-graphm(bindings, node::Needle) = node
+  haskey(bindings, ex) ? graphm(bindings, bindings[ex]) : ex
 graphm(bindings, node::LateVertex) = node.val
 
 function graphm(bindings, ex::Expr)
