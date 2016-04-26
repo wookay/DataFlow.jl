@@ -61,10 +61,13 @@ graphm(x) = graphm(d(), x)
 
 callmemaybe(f, a...) = isempty(a) ? f : :($f($(a...)))
 
+isconstant(v::Vertex) = isa(value(v), Symbol) && isempty(inputs(v))
+
 function syntax!(v::Vertex, ex, bindings = d())
   haskey(bindings, v) && return bindings[v]
   x = () -> callmemaybe(value(v), [syntax!(v, ex, bindings) for v in inputs(v)]...)
   if length(outputs(v)) > 1 # FIXME
+    isconstant(v) && return (bindings[v] = value(v))
     @gensym vertex
     bindings[v] = vertex
     push!(ex.args, :($vertex = $(x())))
