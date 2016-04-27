@@ -15,6 +15,8 @@ end
 
 Vertex(x, args...) = Vertex{typeof(x)}(x, args...)
 
+vertex(a...) = Vertex{Any}(a...)
+
 value(v::Vertex) = v.value
 inputs(v::Vertex) = v.inputs
 outputs(v::Vertex) = v.outputs

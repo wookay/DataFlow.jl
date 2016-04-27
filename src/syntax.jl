@@ -9,7 +9,7 @@ function latenodes(exs)
   bindings = d()
   for ex in exs
     @capture(ex, b_Symbol = f_(a__)) || error("invalid flow binding `$ex`")
-    bindings[b] = LateVertex(Vertex{Any}(f), a)
+    bindings[b] = LateVertex(vertex(f), a)
   end
   return bindings
 end
@@ -21,7 +21,7 @@ graphm(bindings, node::LateVertex) = node.val
 
 function graphm(bindings, ex::Expr)
   @capture(ex, f_(args__)) || error("invalid flow expression `$ex`")
-  Vertex{Any}(f, map(ex -> graphm(bindings, ex), args)...)
+  vertex(f, map(ex -> graphm(bindings, ex), args)...)
 end
 
 function extractresult!(args)
@@ -92,7 +92,7 @@ function inputsm(args)
   bindings = d()
   for arg in args
     isa(arg, Symbol) || error("invalid argument $arg")
-    bindings[arg] = Vertex{Any}(arg)
+    bindings[arg] = vertex(arg)
   end
   return bindings
 end
