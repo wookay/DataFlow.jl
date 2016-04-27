@@ -44,7 +44,8 @@ function neighbours(v::Vertex)
   return vs
 end
 
-function walk(f, v::Vertex, children, seen = Set{typeof(v)}())
+"Applies `f` to each vertex in the graph."
+function foreachv(f, v::Vertex, children = neighbours, seen = Set{typeof(v)}())
   v in seen && return
   f(v)
   push!(seen, v)
@@ -54,18 +55,15 @@ function walk(f, v::Vertex, children, seen = Set{typeof(v)}())
   return
 end
 
-"Applies `f` to each vertex in the graph."
-foreach(f, v::Vertex) = walk(f, v, neighbours)
-
 function Base.length(v::Vertex)
   n = 0
-  foreach(_ -> n += 1, v)
+  foreachv(_ -> n += 1, v)
   return n
 end
 
 "`reaching(f, v)` applies `f` to every node dependent on `v`."
 reaching(f, v::Vertex, seen = Set{typeof(v)}()) =
-  map(v->walk(f, v, outputs, seen), outputs(v))
+  map(v->foreachv(f, v, outputs, seen), outputs(v))
 
 "`reaching(v)` collects the set of all nodes dependent on `v`."
 function reaching(v::Vertex)
