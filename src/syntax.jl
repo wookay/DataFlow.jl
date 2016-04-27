@@ -64,10 +64,10 @@ function syntax!(v::Vertex, ex, bindings = d())
   x = () -> callmemaybe(value(v), [syntax!(v, ex, bindings) for v in inputs(v)]...)
   if length(outputs(v)) > 1 # FIXME
     isconstant(v) && return (bindings[v] = value(v))
-    @gensym vertex
-    bindings[v] = vertex
-    push!(ex.args, :($vertex = $(x())))
-    return vertex
+    @gensym edge
+    bindings[v] = edge
+    push!(ex.args, :($edge = $(x())))
+    return edge
   else
     x′ = x()
     isfinal(v) && push!(ex.args, x′)
