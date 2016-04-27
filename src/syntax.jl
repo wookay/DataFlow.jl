@@ -1,7 +1,7 @@
 # Syntax → Graph
 
 type LateVertex{T}
-  val::Vertex{T}
+  val::DLVertex{T}
   args::Vector{Any}
 end
 
@@ -57,9 +57,9 @@ graphm(x) = graphm(d(), x)
 
 callmemaybe(f, a...) = isempty(a) ? f : :($f($(a...)))
 
-isconstant(v::Vertex) = isa(value(v), Symbol) && isempty(inputs(v))
+isconstant(v::DLVertex) = isa(value(v), Symbol) && isempty(inputs(v))
 
-function syntax!(v::Vertex, ex, bindings = d())
+function syntax!(v::DLVertex, ex, bindings = d())
   haskey(bindings, v) && return bindings[v]
   x = () -> callmemaybe(value(v), [syntax!(v, ex, bindings) for v in inputs(v)]...)
   if length(outputs(v)) > 1 # FIXME
@@ -78,13 +78,13 @@ end
 syntax!(n::Needle, ex, bindings = d()) =
   syntax!(n.vertex, ex, bindings) # FIXME
 
-function syntax(v::Vertex)
+function syntax(v::DLVertex)
   ex = :(;)
   syntax!(v, ex)
   ex
 end
 
-function Base.show(io::IO, v::Vertex)
+function Base.show(io::IO, v::DLVertex)
   println(io, typeof(v))
   s = MacroTools.alias_gensyms(syntax(v))
   print(io, join([sprint(print, x) for x in s.args], "\n"))
@@ -118,7 +118,7 @@ end
 
 type SyntaxGraph
   args::Vector{Symbol}
-  output::Vertex{Any}
+  output::DLVertex{Any}
 end
 
 function flow_func(ex)
