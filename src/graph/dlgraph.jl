@@ -50,3 +50,5 @@ function Base.map(f, v::Vertex; cache = d())
 end
 
 Base.copy(v::Vertex) = map(identity, v)
+
+isfinal(v::Vertex) = isempty(outputs(v))
