@@ -36,53 +36,6 @@ thread!(v::Vertex, xs...) = reduce(thread!, v, xs)
 
 # Processing
 
-"Gets the immediate neighbours (input and output nodes) of a vertex."
-function neighbours(v::Vertex)
-  vs = Set{typeof(v)}()
-  for v′ in outputs(v) push!(vs, v′) end
-  for v′ in inputs(v) push!(vs, v′.vertex) end
-  return vs
-end
-
-"Applies `f` to each vertex in the graph."
-function foreachv(f, v::Vertex, children = neighbours, seen = Set{typeof(v)}())
-  v in seen && return
-  f(v)
-  push!(seen, v)
-  for v in children(v)
-    walk(f, v, children, seen)
-  end
-  return
-end
-
-function Base.length(v::Vertex)
-  n = 0
-  foreachv(_ -> n += 1, v)
-  return n
-end
-
-"`reaching(f, v)` applies `f` to every node dependent on `v`."
-reaching(f, v::Vertex, seen = Set{typeof(v)}()) =
-  map(v->foreachv(f, v, outputs, seen), outputs(v))
-
-"`reaching(v)` collects the set of all nodes dependent on `v`."
-function reaching(v::Vertex)
-  result = Set{typeof(v)}()
-  reaching(v) do v
-    push!(result, v)
-  end
-  return result
-end
-
-"Detects cycles in a graph."
-function iscyclic(v::Vertex)
-  cyclic = false
-  foreach(v) do v
-    v in reaching(v) && (cyclic = true)
-  end
-  return cyclic
-end
-
 function Base.map(f, v::Vertex; cache = d())
   haskey(cache, v) && return cache[v]
   node = vertex(f(value(v)))
@@ -96,8 +49,4 @@ function Base.map(f, v::Vertex; cache = d())
   return node
 end
 
-isfinal(v::Vertex) = isempty(outputs(v))
-
 Base.copy(v::Vertex) = map(identity, v)
-
-Base.isless(a::Vertex, b::Vertex) = b in reaching(a)
