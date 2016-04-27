@@ -84,6 +84,19 @@ function syntax(v::Vertex)
   ex
 end
 
+function constructor(ex)
+  ex = MacroTools.prewalk(ex) do x
+    @capture(x, f_(a__)) ? :(vertex($f, $(a...))) : x
+  end
+  ex′ = :(;)
+  for x in block(ex).args
+    @capture(x, v_ = vertex(f_, a__)) && inexpr(x.args[2], v) ?
+      push!(ex′.args, :($v = vertex($f)), :(thread!($v, $(a...)))) :
+      push!(ex′.args, x)
+  end
+  return ex′
+end
+
 # Function / expression macros
 
 type Identity end
