@@ -7,6 +7,7 @@ end
 
 include("dlgraph.jl")
 include("ilgraph.jl")
+include("conversions.jl")
 
 thread!{T<:AVertex}(to::T, from::T) = thread!(to, Needle(from, 1))
 
