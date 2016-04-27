@@ -13,7 +13,6 @@ DLVertex(x) = DLVertex{typeof(x)}(x)
 value(v::DLVertex) = v.value
 inputs(v::DLVertex) = v.inputs
 outputs(v::DLVertex) = v.outputs
-Base.eltype{T}(::DLVertex{T}) = T
 
 function thread!(to::DLVertex, from::Needle)
   push!(inputs(to), from)

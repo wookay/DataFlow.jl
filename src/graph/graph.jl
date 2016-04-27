@@ -1,5 +1,7 @@
 abstract AVertex{T}
 
+Base.eltype{T}(::AVertex{T}) = T
+
 immutable Needle{T}
   vertex::T
   output::Int
