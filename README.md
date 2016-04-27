@@ -72,13 +72,13 @@ Flow makes it easy to express program graphs of arbitrary complexity, so more co
 
 ### Implementation details
 
-Flow's programs are stored as directed multigraphs, that is, graphs in which any node can be connected to any other node multiple times. The basic graph data structure is the `Vertex`, defined as follows:
+Flow's programs are stored as directed multigraphs, that is, graphs in which any node can be connected to any other node multiple times. The basic graph data structure is the `DLVertex`, defined as follows:
 
 ```julia
-type Vertex{T}
+type DLVertex{T}
   value::T
-  inputs::Vector{Needle{Vertex{T}}}
-  outputs::Set{Vertex{T}}
+  inputs::Vector{Needle{DLVertex{T}}}
+  outputs::Set{DLVertex{T}}
 end
 ```
 

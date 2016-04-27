@@ -5,38 +5,38 @@ immutable Needle{T}
   output::Int
 end
 
-type Vertex{T}
+type DLVertex{T}
   value::T
-  inputs::Vector{Needle{Vertex{T}}}
-  outputs::Set{Vertex{T}}
+  inputs::Vector{Needle{DLVertex{T}}}
+  outputs::Set{DLVertex{T}}
 
-  Vertex(x, args...) = thread!(new(x, [], Set{Vertex{T}}()), args...)
+  DLVertex(x, args...) = thread!(new(x, [], Set{DLVertex{T}}()), args...)
 end
 
-Vertex(x, args...) = Vertex{typeof(x)}(x, args...)
+DLVertex(x, args...) = DLVertex{typeof(x)}(x, args...)
 
-vertex(a...) = Vertex{Any}(a...)
+vertex(a...) = DLVertex{Any}(a...)
 
-value(v::Vertex) = v.value
-inputs(v::Vertex) = v.inputs
-outputs(v::Vertex) = v.outputs
-Base.eltype{T}(::Vertex{T}) = T
+value(v::DLVertex) = v.value
+inputs(v::DLVertex) = v.inputs
+outputs(v::DLVertex) = v.outputs
+Base.eltype{T}(::DLVertex{T}) = T
 
-function thread!(to::Vertex, from::Needle)
+function thread!(to::DLVertex, from::Needle)
   push!(inputs(to), from)
   push!(outputs(from.vertex), to)
   return to
 end
 
-thread!(to::Vertex, from::Vertex) = thread!(to, Needle(from, 1))
+thread!(to::DLVertex, from::DLVertex) = thread!(to, Needle(from, 1))
 
-thread!{T}(to::Vertex{T}, from) = thread!(to, Vertex{T}(from))
+thread!{T}(to::DLVertex{T}, from) = thread!(to, DLVertex{T}(from))
 
-thread!(v::Vertex, xs...) = reduce(thread!, v, xs)
+thread!(v::DLVertex, xs...) = reduce(thread!, v, xs)
 
 # Processing
 
-function Base.map(f, v::Vertex; cache = d())
+function Base.map(f, v::DLVertex; cache = d())
   haskey(cache, v) && return cache[v]
   node = vertex(f(value(v)))
   cache[v] = node
@@ -49,6 +49,6 @@ function Base.map(f, v::Vertex; cache = d())
   return node
 end
 
-Base.copy(v::Vertex) = map(identity, v)
+Base.copy(v::DLVertex) = map(identity, v)
 
-isfinal(v::Vertex) = isempty(outputs(v))
+isfinal(v::DLVertex) = isempty(outputs(v))
