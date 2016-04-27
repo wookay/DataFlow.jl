@@ -16,3 +16,14 @@ function thread!(to::ILVertex, from::Needle)
 end
 
 il(v::AVertex) = convert(ILVertex, v)
+
+# TODO: figure out how to factor out the caching pattern
+
+function Base.copy(v::ILVertex, cache = Dict{eltype(v),eltype(v)}())
+  haskey(cache, v) && return cache[v]
+  w = cache[v] = typeof(v)(value(v))
+  for n in inputs(v)
+    thread!(w, typeof(n)(copy(n.vertex, cache), n.output))
+  end
+  return w
+end
