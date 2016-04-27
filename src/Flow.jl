@@ -4,7 +4,7 @@ using Lazy, MacroTools
 
 export @flow, iscyclic
 
-include("graph/dlgraph.jl")
+include("graph/graph.jl")
 include("syntax.jl")
 
 end # module
