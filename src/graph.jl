@@ -85,13 +85,13 @@ end
 
 function Base.map(f, v::Vertex; cache = d())
   haskey(cache, v) && return cache[v]
-  node = Vertex(f(value(v)))
+  node = vertex(f(value(v)))
   cache[v] = node
   for out in outputs(v)
     push!(node.outputs, map(f, out, cache = cache))
   end
   for in in inputs(v)
-    push!(node.inputs, Needle(map(f, in.graph, cache = cache), in.index))
+    push!(node.inputs, Needle(map(f, in.vertex, cache = cache), in.output))
   end
   return node
 end
