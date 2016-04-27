@@ -84,12 +84,6 @@ function syntax(v::DLVertex)
   ex
 end
 
-function Base.show(io::IO, v::DLVertex)
-  println(io, typeof(v))
-  s = MacroTools.alias_gensyms(syntax(v))
-  print(io, join([sprint(print, x) for x in s.args], "\n"))
-end
-
 function constructor(ex)
   ex = MacroTools.prewalk(ex) do x
     @capture(x, f_(a__)) ? :(vertex($f, $(a...))) : x
@@ -101,6 +95,16 @@ function constructor(ex)
       push!(ex′.args, x)
   end
   return ex′
+end
+
+# Display
+
+syntax(v::AVertex) = syntax(dl(v))
+
+function Base.show(io::IO, v::AVertex)
+  println(io, typeof(v))
+  s = MacroTools.alias_gensyms(syntax(v))
+  print(io, join([sprint(print, x) for x in s.args], "\n"))
 end
 
 # Function / expression macros

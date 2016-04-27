@@ -15,3 +15,5 @@ function thread!(to::ILVertex, from::Needle)
   push!(inputs(to), from)
   return to
 end
+
+il(v::AVertex) = convert(ILVertex, v)
