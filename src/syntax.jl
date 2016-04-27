@@ -84,6 +84,12 @@ function syntax(v::Vertex)
   ex
 end
 
+function Base.show(io::IO, v::Vertex)
+  println(io, typeof(v))
+  s = MacroTools.alias_gensyms(syntax(v))
+  print(io, join([sprint(print, x) for x in s.args], "\n"))
+end
+
 function constructor(ex)
   ex = MacroTools.prewalk(ex) do x
     @capture(x, f_(a__)) ? :(vertex($f, $(a...))) : x
