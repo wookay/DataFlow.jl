@@ -1,3 +1,5 @@
+import Base: copy, hash, ==
+
 abstract AVertex{T}
 
 Base.eltype{T}(::AVertex{T}) = T
@@ -7,6 +9,7 @@ immutable Needle{T}
   output::Int
 end
 
+include("set.jl")
 include("dlgraph.jl")
 include("ilgraph.jl")
 include("conversions.jl")

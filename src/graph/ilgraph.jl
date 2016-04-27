@@ -19,7 +19,7 @@ il(v::AVertex) = convert(ILVertex, v)
 
 # TODO: figure out how to factor out the caching pattern
 
-function Base.copy(v::ILVertex, cache = Dict{eltype(v),eltype(v)}())
+function copy(v::ILVertex, cache = ODict())
   haskey(cache, v) && return cache[v]
   w = cache[v] = typeof(v)(value(v))
   for n in inputs(v)
@@ -27,3 +27,14 @@ function Base.copy(v::ILVertex, cache = Dict{eltype(v),eltype(v)}())
   end
   return w
 end
+
+function hash(v::ILVertex, h::UInt = UInt(0), seen = OSet())
+  h = hash(value(v), h)
+  v in seen ? (return h) : push!(seen, v)
+  for n in inputs(v)
+    h $= hash(n.vertex, hash(n.output), seen)
+  end
+  return h
+end
+
+==(a::ILVertex, b::ILVertex) = hash(a) == hash(b)
