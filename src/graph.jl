@@ -36,19 +36,6 @@ thread!(v::Vertex, xs...) = reduce(thread!, v, xs)
 
 # Processing
 
-function Base.hash(v::Vertex, h::UInt, seen = s())
-  v in seen && return hash(value(v))
-  push!(seen, v)
-  h = hash(value(v), h)
-  for x in outputs(v)
-    h $= hash_(x, seen)
-  end
-  for x in inputs(v)
-    h $= hash(x.output, hash_(x.vertex, seen))
-  end
-  return h
-end
-
 function Base.map(f, v::Vertex; cache = d())
   haskey(cache, v) && return cache[v]
   node = vertex(f(value(v)))
