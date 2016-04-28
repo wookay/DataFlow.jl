@@ -23,5 +23,3 @@ end
 vertex(a...) = DLVertex{Any}(a...)
 
 dl(v::AVertex) = convert(DLVertex, v)
-
-isfinal(v::DLVertex) = isempty(outputs(v))

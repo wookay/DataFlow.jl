@@ -25,3 +25,5 @@ thread!(v::AVertex, xs...) = reduce(thread!, v, xs)
 (::Type{T}){T<:AVertex}(x, args...) = thread!(T(x), args...)
 
 head(v::AVertex) = typeof(v)(value(v))
+
+isfinal(v::AVertex) = isempty(outputs(v))

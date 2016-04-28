@@ -9,6 +9,7 @@ ILVertex(x) = ILVertex{typeof(x)}(x)
 
 value(v::ILVertex) = v.value
 inputs(v::ILVertex) = v.inputs
+outputs(v::ILVertex) = []
 
 function thread!(to::ILVertex, from::Needle)
   push!(inputs(to), from)
@@ -44,3 +45,5 @@ function hash(v::ILVertex, h::UInt = UInt(0), seen = OSet())
 end
 
 ==(a::ILVertex, b::ILVertex) = hash(a) == hash(b)
+
+isfinal(::ILVertex) = true
