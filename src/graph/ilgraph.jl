@@ -1,4 +1,4 @@
-immutable ILVertex{T} <: AVertex{T}
+type ILVertex{T} <: AVertex{T}
   value::T
   inputs::Vector{Needle{ILVertex{T}}}
 
