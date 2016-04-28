@@ -26,4 +26,7 @@ thread!(v::AVertex, xs...) = reduce(thread!, v, xs)
 
 head(v::AVertex) = typeof(v)(value(v))
 
-isfinal(v::AVertex) = isempty(outputs(v))
+nout(v::AVertex) = length(outputs(v)) # FIXME
+nin(v::AVertex) = length(inputs(v))
+
+isfinal(v::AVertex) = nout(v) == 0

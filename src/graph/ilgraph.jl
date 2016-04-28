@@ -10,6 +10,7 @@ IVertex(x) = IVertex{typeof(x)}(x)
 value(v::IVertex) = v.value
 inputs(v::IVertex) = v.inputs
 outputs(v::IVertex) = []
+nout(v::IVertex) = 0
 
 function thread!(to::IVertex, from::Needle)
   push!(inputs(to), from)
@@ -45,5 +46,3 @@ function hash(v::IVertex, h::UInt = UInt(0), seen = OSet())
 end
 
 ==(a::IVertex, b::IVertex) = hash(a) == hash(b)
-
-isfinal(::IVertex) = true
