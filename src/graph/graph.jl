@@ -30,3 +30,15 @@ nout(v::AVertex) = length(outputs(v)) # FIXME
 nin(v::AVertex) = length(inputs(v))
 
 isfinal(v::AVertex) = nout(v) == 0
+
+# TODO: remove some collects once iteration is fixed
+
+neighbours(v::AVertex) =
+  OSet{typeof(v)}(vcat(collect(outputs(v)), map(n->n.vertex, inputs(v))))
+
+function collectv(v, s = OASet{typeof(v)}())
+  v in s && return collect(s)
+  push!(s, v)
+  foreach(v -> collectv(v, s), collect(neighbours(v)))
+  return collect(s)
+end
