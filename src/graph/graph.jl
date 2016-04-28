@@ -21,3 +21,5 @@ thread!(to::AVertex, from) = thread!(to, typeof(to)(from))
 thread!(v::AVertex, xs...) = reduce(thread!, v, xs)
 
 (::Type{T}){T<:AVertex}(x, args...) = thread!(T(x), args...)
+
+head(v::AVertex) = typeof(v)(value(v))

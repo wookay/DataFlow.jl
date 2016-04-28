@@ -21,7 +21,7 @@ il(v::AVertex) = convert(ILVertex, v)
 
 function copy(v::ILVertex, cache = ODict())
   haskey(cache, v) && return cache[v]
-  w = cache[v] = typeof(v)(value(v))
+  w = cache[v] = head(v)
   for n in inputs(v)
     thread!(w, typeof(n)(copy(n.vertex, cache), n.output))
   end
