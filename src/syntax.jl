@@ -79,8 +79,10 @@ syntax!(n::Needle, ex, bindings = d()) =
   syntax!(n.vertex, ex, bindings) # FIXME
 
 function syntax(v::DVertex)
-  ex = :(;)
-  syntax!(v, ex)
+  ex, bs = :(;), d()
+  for v in sort!(filter(isfinal, collectv(v)), by = x -> x === v)
+    syntax!(v, ex, bs)
+  end
   ex
 end
 
