@@ -32,6 +32,8 @@ postwalk(f, v::ILVertex) = walk(v, identity, f)
 
 copy(v::ILVertex) = walk(v, identity, identity)
 
+# TODO: check we don't get equivalent hashes for different graphs
+
 function hash(v::ILVertex, h::UInt = UInt(0), seen = OSet())
   h = hash(value(v), h)
   v in seen ? (return h) : push!(seen, v)
