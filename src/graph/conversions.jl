@@ -3,7 +3,7 @@ import Base: convert
 convert{T}(::Type{Needle{T}}, n::Needle) =
   Needle{T}(convert(T, n.vertex), n.output)
 
-for (V, W) in [(DLVertex, ILVertex), (ILVertex, DLVertex)]
+for (V, W) in [(DVertex, IVertex), (IVertex, DVertex)]
   @eval function convert{T}(::Type{$W{T}}, v::$V, cache = ODict())
     haskey(cache, v) && return cache[v]
     w = cache[v] = $W{T}(value(v))

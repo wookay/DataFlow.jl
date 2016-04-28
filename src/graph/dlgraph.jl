@@ -1,25 +1,25 @@
 # Construction
 
-type DLVertex{T} <: AVertex{T}
+type DVertex{T} <: AVertex{T}
   value::T
-  inputs::Vector{Needle{DLVertex{T}}}
-  outputs::Set{DLVertex{T}}
+  inputs::Vector{Needle{DVertex{T}}}
+  outputs::Set{DVertex{T}}
 
-  DLVertex(x) = new(x, [], Set{DLVertex{T}}())
+  DVertex(x) = new(x, [], Set{DVertex{T}}())
 end
 
-DLVertex(x) = DLVertex{typeof(x)}(x)
+DVertex(x) = DVertex{typeof(x)}(x)
 
-value(v::DLVertex) = v.value
-inputs(v::DLVertex) = v.inputs
-outputs(v::DLVertex) = v.outputs
+value(v::DVertex) = v.value
+inputs(v::DVertex) = v.inputs
+outputs(v::DVertex) = v.outputs
 
-function thread!(to::DLVertex, from::Needle)
+function thread!(to::DVertex, from::Needle)
   push!(inputs(to), from)
   push!(outputs(from.vertex), to)
   return to
 end
 
-vertex(a...) = DLVertex{Any}(a...)
+vertex(a...) = DVertex{Any}(a...)
 
-dl(v::AVertex) = convert(DLVertex, v)
+dl(v::AVertex) = convert(DVertex, v)

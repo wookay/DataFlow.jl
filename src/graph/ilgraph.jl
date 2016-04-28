@@ -1,24 +1,24 @@
-type ILVertex{T} <: AVertex{T}
+type IVertex{T} <: AVertex{T}
   value::T
-  inputs::Vector{Needle{ILVertex{T}}}
+  inputs::Vector{Needle{IVertex{T}}}
 
-  ILVertex(x) = new(x, [])
+  IVertex(x) = new(x, [])
 end
 
-ILVertex(x) = ILVertex{typeof(x)}(x)
+IVertex(x) = IVertex{typeof(x)}(x)
 
-value(v::ILVertex) = v.value
-inputs(v::ILVertex) = v.inputs
-outputs(v::ILVertex) = []
+value(v::IVertex) = v.value
+inputs(v::IVertex) = v.inputs
+outputs(v::IVertex) = []
 
-function thread!(to::ILVertex, from::Needle)
+function thread!(to::IVertex, from::Needle)
   push!(inputs(to), from)
   return to
 end
 
-il(v::AVertex) = convert(ILVertex, v)
+il(v::AVertex) = convert(IVertex, v)
 
-function walk(v::ILVertex, pre, post, cache = ODict())
+function walk(v::IVertex, pre, post, cache = ODict())
   haskey(cache, v) && return cache[v]::typeof(v)
   v′ = pre(v)
   w = cache[v] = head(v′)
@@ -28,14 +28,14 @@ function walk(v::ILVertex, pre, post, cache = ODict())
   return post(w)
 end
 
-prewalk(f, v::ILVertex) = walk(v, f, identity)
-postwalk(f, v::ILVertex) = walk(v, identity, f)
+prewalk(f, v::IVertex) = walk(v, f, identity)
+postwalk(f, v::IVertex) = walk(v, identity, f)
 
-copy(v::ILVertex) = walk(v, identity, identity)
+copy(v::IVertex) = walk(v, identity, identity)
 
 # TODO: check we don't get equivalent hashes for different graphs
 
-function hash(v::ILVertex, h::UInt = UInt(0), seen = OSet())
+function hash(v::IVertex, h::UInt = UInt(0), seen = OSet())
   h = hash(value(v), h)
   v in seen ? (return h) : push!(seen, v)
   for n in inputs(v)
@@ -44,6 +44,6 @@ function hash(v::ILVertex, h::UInt = UInt(0), seen = OSet())
   return h
 end
 
-==(a::ILVertex, b::ILVertex) = hash(a) == hash(b)
+==(a::IVertex, b::IVertex) = hash(a) == hash(b)
 
-isfinal(::ILVertex) = true
+isfinal(::IVertex) = true

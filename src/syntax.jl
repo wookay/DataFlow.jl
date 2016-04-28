@@ -1,7 +1,7 @@
 # Syntax → Graph
 
 type LateVertex{T}
-  val::DLVertex{T}
+  val::DVertex{T}
   args::Vector{Any}
 end
 
@@ -57,9 +57,9 @@ graphm(x) = graphm(d(), x)
 
 callmemaybe(f, a...) = isempty(a) ? f : :($f($(a...)))
 
-isconstant(v::DLVertex) = isa(value(v), Symbol) && isempty(inputs(v))
+isconstant(v::DVertex) = isa(value(v), Symbol) && isempty(inputs(v))
 
-function syntax!(v::DLVertex, ex, bindings = d())
+function syntax!(v::DVertex, ex, bindings = d())
   haskey(bindings, v) && return bindings[v]
   x = () -> callmemaybe(value(v), [syntax!(v, ex, bindings) for v in inputs(v)]...)
   if length(outputs(v)) > 1 # FIXME
@@ -78,7 +78,7 @@ end
 syntax!(n::Needle, ex, bindings = d()) =
   syntax!(n.vertex, ex, bindings) # FIXME
 
-function syntax(v::DLVertex)
+function syntax(v::DVertex)
   ex = :(;)
   syntax!(v, ex)
   ex
@@ -122,7 +122,7 @@ end
 
 type SyntaxGraph
   args::Vector{Symbol}
-  output::DLVertex{Any}
+  output::DVertex{Any}
 end
 
 function flow_func(ex)
