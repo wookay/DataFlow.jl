@@ -9,6 +9,8 @@ immutable Needle{T}
   output::Int
 end
 
+==(a::Needle, b::Needle) = a.output == b.output && a.vertex == b.vertex
+
 include("set.jl")
 include("dlgraph.jl")
 include("ilgraph.jl")

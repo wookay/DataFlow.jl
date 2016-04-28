@@ -17,16 +17,20 @@ end
 
 il(v::AVertex) = convert(ILVertex, v)
 
-# TODO: figure out how to factor out the caching pattern
-
-function copy(v::ILVertex, cache = ODict())
-  haskey(cache, v) && return cache[v]
-  w = cache[v] = head(v)
-  for n in inputs(v)
-    thread!(w, typeof(n)(copy(n.vertex, cache), n.output))
+function walk(v::ILVertex, pre, post, cache = ODict())
+  haskey(cache, v) && return cache[v]::typeof(v)
+  v′ = pre(v)
+  w = cache[v] = head(v′)
+  for n in inputs(v′)
+    thread!(w, typeof(n)(walk(n.vertex, pre, post, cache), n.output))
   end
-  return w
+  return post(w)
 end
+
+prewalk(f, v::ILVertex) = walk(v, f, identity)
+postwalk(f, v::ILVertex) = walk(v, identity, f)
+
+copy(v::ILVertex) = walk(v, identity, identity)
 
 function hash(v::ILVertex, h::UInt = UInt(0), seen = OSet())
   h = hash(value(v), h)
