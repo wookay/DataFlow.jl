@@ -62,7 +62,7 @@ isconstant(v::DVertex) = isa(value(v), Symbol) && isempty(inputs(v))
 function syntax!(v::DVertex, ex, bindings = d())
   haskey(bindings, v) && return bindings[v]
   x = () -> callmemaybe(value(v), [syntax!(v, ex, bindings) for v in inputs(v)]...)
-  if length(outputs(v)) > 1 # FIXME
+  if nout(v) > 1
     isconstant(v) && return (bindings[v] = value(v))
     @gensym edge
     bindings[v] = edge
