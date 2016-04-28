@@ -20,7 +20,7 @@ Base.collect(s::ObjectIdSet) = collect(keys(s.dict))
 
 @forward ObjectIdSet.dict Base.length
 
-# @iter xs::ObjectIdSet -> keys(xs.dict)
+@iter xs::ObjectIdSet -> keys(xs.dict)
 
 typealias OSet ObjectIdSet
 
@@ -40,6 +40,6 @@ Base.collect(xs::ObjectArraySet) = xs.xs
 
 @forward ObjectArraySet.xs Base.length
 
-# @iter xs::ObjectArraySet -> xs.xs
+@iter xs::ObjectArraySet -> xs.xs
 
 typealias OASet{T} ObjectArraySet{T}
