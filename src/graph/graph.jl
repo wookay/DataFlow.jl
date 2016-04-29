@@ -1,8 +1,8 @@
 import Base: copy, hash, ==
 
-abstract AVertex{T}
+abstract Vertex{T}
 
-Base.eltype{T}(::AVertex{T}) = T
+Base.eltype{T}(::Vertex{T}) = T
 
 immutable Needle{T}
   vertex::T
@@ -16,22 +16,22 @@ include("dlgraph.jl")
 include("ilgraph.jl")
 include("conversions.jl")
 
-thread!{T<:AVertex}(to::T, from::T) = thread!(to, Needle(from, 1))
+thread!{T<:Vertex}(to::T, from::T) = thread!(to, Needle(from, 1))
 
-thread!(to::AVertex, from) = thread!(to, typeof(to)(from))
+thread!(to::Vertex, from) = thread!(to, typeof(to)(from))
 
-thread!(v::AVertex, xs...) = reduce(thread!, v, xs)
+thread!(v::Vertex, xs...) = reduce(thread!, v, xs)
 
-(::Type{T}){T<:AVertex}(x, args...) = thread!(T(x), args...)
+(::Type{T}){T<:Vertex}(x, args...) = thread!(T(x), args...)
 
-head(v::AVertex) = typeof(v)(value(v))
+head(v::Vertex) = typeof(v)(value(v))
 
-nout(v::AVertex) = length(outputs(v)) # FIXME
-nin(v::AVertex) = length(inputs(v))
+nout(v::Vertex) = length(outputs(v)) # FIXME
+nin(v::Vertex) = length(inputs(v))
 
-isfinal(v::AVertex) = nout(v) == 0
+isfinal(v::Vertex) = nout(v) == 0
 
-neighbours(v::AVertex) =
+neighbours(v::Vertex) =
   OSet{typeof(v)}(vcat(collect(outputs(v)), map(n->n.vertex, inputs(v))))
 
 function collectv(v, s = OASet{typeof(v)}())

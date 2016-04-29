@@ -9,5 +9,5 @@ for (V, W) in [(DVertex, IVertex), (IVertex, DVertex)]
     w = cache[v] = $W{T}(value(v))
     thread!(w, [Needle{$W{T}}(convert($W{T}, n.vertex, cache), n.output) for n in inputs(v)]...)
   end
-  @eval convert(::Type{$W}, v::AVertex) = convert($W{eltype(v)}, v)
+  @eval convert(::Type{$W}, v::Vertex) = convert($W{eltype(v)}, v)
 end

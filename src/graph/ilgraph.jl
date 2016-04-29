@@ -1,4 +1,4 @@
-type IVertex{T} <: AVertex{T}
+type IVertex{T} <: Vertex{T}
   value::T
   inputs::Vector{Needle{IVertex{T}}}
 
@@ -17,7 +17,7 @@ function thread!(to::IVertex, from::Needle)
   return to
 end
 
-il(v::AVertex) = convert(IVertex, v)
+il(v::Vertex) = convert(IVertex, v)
 
 function walk(v::IVertex, pre, post, cache = ODict())
   haskey(cache, v) && return cache[v]::typeof(v)

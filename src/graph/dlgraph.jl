@@ -1,6 +1,6 @@
 # Construction
 
-type DVertex{T} <: AVertex{T}
+type DVertex{T} <: Vertex{T}
   value::T
   inputs::Vector{Needle{DVertex{T}}}
   outputs::Set{DVertex{T}}
@@ -22,4 +22,4 @@ end
 
 vertex(a...) = DVertex{Any}(a...)
 
-dl(v::AVertex) = convert(DVertex, v)
+dl(v::Vertex) = convert(DVertex, v)
