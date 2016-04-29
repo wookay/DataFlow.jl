@@ -1,4 +1,4 @@
-import Base: copy, hash, ==
+import Base: copy, hash, ==, <
 
 abstract Vertex{T}
 
@@ -40,3 +40,11 @@ function collectv(v, s = OASet{typeof(v)}())
   foreach(v -> collectv(v, s), neighbours(v))
   return collect(s)
 end
+
+function isreaching(from::Vertex, to::Vertex, seen = OSet())
+  to ∈ seen && return false
+  push!(seen, to)
+  any(n -> n.vertex ≡ from || isreaching(from, n.vertex, seen), inputs(to))
+end
+
+<(a::Vertex, b::Vertex) = isreaching(a, b)

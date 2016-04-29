@@ -53,16 +53,15 @@ end
 graphm(x) = graphm(d(), x)
 
 # Graph → Syntax
-# TODO: islands, multiple outputs
 
 callmemaybe(f, a...) = isempty(a) ? f : :($f($(a...)))
 
 isconstant(v::DVertex) = isa(value(v), Symbol) && isempty(inputs(v))
 
-function syntax!(v::DVertex, ex, bindings = d())
+function syntax!(v::DVertex, ex, bindings = d(); bind = nout(v) > 1)
   haskey(bindings, v) && return bindings[v]
   x = () -> callmemaybe(value(v), [syntax!(v, ex, bindings) for v in inputs(v)]...)
-  if nout(v) > 1
+  if bind
     isconstant(v) && return (bindings[v] = value(v))
     @gensym edge
     bindings[v] = edge
@@ -76,9 +75,21 @@ end
 syntax!(n::Needle, ex, bindings = d()) =
   syntax!(n.vertex, ex, bindings) # FIXME
 
+function floatanchors(v::DVertex)
+  vs = filter(isfloating, collectv(v))
+  vs′ = typeof(v)[]
+  for v in vs
+    any(v′ -> v < v′, vs′) || push!(vs′, v)
+  end
+  vs′
+end
+
 function syntax(v::DVertex)
   ex, bs = :(;), d()
-  for v in sort!(filter(isfinal, collectv(v)), by = x -> x === v)
+  for v in floatanchors(v)
+    syntax!(v, ex, bs, bind = true)
+  end
+  for v in sort!(anchors(v), by = x -> x === v)
     push!(ex.args, syntax!(v, ex, bs))
   end
   ex
@@ -99,9 +110,9 @@ end
 
 # Display
 
-syntax(v::AVertex) = syntax(dl(v))
+syntax(v::Vertex) = syntax(dl(v))
 
-function Base.show(io::IO, v::AVertex)
+function Base.show(io::IO, v::Vertex)
   println(io, typeof(v))
   s = MacroTools.alias_gensyms(syntax(v))
   print(io, join([sprint(print, x) for x in s.args], "\n"))

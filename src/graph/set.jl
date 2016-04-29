@@ -9,7 +9,8 @@ Base.eltype{T}(::ObjectIdSet{T}) = T
 
 ObjectIdSet() = ObjectIdSet{Any}()
 
-Base.push!{T}(s::ObjectIdSet, x::T) = (s.dict[x] = nothing; s)
+Base.push!{T}(s::ObjectIdSet{T}, x::T) = (s.dict[x] = nothing; s)
+Base.delete!{T}(s::ObjectIdSet{T}, x::T) = (delete!(s.dict, x); s)
 Base.in(x, s::ObjectIdSet) = haskey(s.dict, x)
 
 (::Type{ObjectIdSet{T}}){T}(xs) = push!(ObjectIdSet{T}(), xs...)
