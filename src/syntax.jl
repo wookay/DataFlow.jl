@@ -69,9 +69,7 @@ function syntax!(v::DVertex, ex, bindings = d())
     push!(ex.args, :($edge = $(x())))
     return edge
   else
-    x′ = x()
-    isfinal(v) && push!(ex.args, x′)
-    return x′
+    x()
   end
 end
 
@@ -81,7 +79,7 @@ syntax!(n::Needle, ex, bindings = d()) =
 function syntax(v::DVertex)
   ex, bs = :(;), d()
   for v in sort!(filter(isfinal, collectv(v)), by = x -> x === v)
-    syntax!(v, ex, bs)
+    push!(ex.args, syntax!(v, ex, bs))
   end
   ex
 end
