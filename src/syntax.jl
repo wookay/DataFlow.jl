@@ -70,9 +70,11 @@ function syntax(head::DVertex)
     x = callmemaybe(value(v), [binding(bs, n) for n in inputs(v)]...)
     if isconstant(v)
       bs[v] = value(v)
-    elseif nout(v) > 1 || haskey(bs, v) || (!isfinal(head) && v ≡ head)
+    elseif nout(v) > 1 || (!isfinal(head) && v ≡ head)
       edge = binding(bs, v)
       push!(ex.args, :($edge = $x))
+    elseif haskey(bs, v)
+      ex = MacroTools.replace(ex, bs[v], x)
     else
       isfinal(v) ? push!(ex.args, x) : (bs[v] = x)
     end
