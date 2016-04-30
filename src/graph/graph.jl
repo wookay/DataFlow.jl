@@ -1,4 +1,4 @@
-import Base: copy, hash, ==, <
+import Base: copy, hash, ==, <, <<
 
 abstract Vertex{T}
 
@@ -31,14 +31,12 @@ nin(v::Vertex) = length(inputs(v))
 
 isfinal(v::Vertex) = nout(v) == 0
 
-neighbours(v::Vertex) =
-  OSet{typeof(v)}(vcat(collect(outputs(v)), map(n->n.vertex, inputs(v))))
-
-function collectv(v, s = OASet{typeof(v)}())
-  v in s && return collect(s)
-  push!(s, v)
-  foreach(v -> collectv(v, s), neighbours(v))
-  return collect(s)
+function collectv(v::Vertex, vs = OASet{eltype(v)}())
+  v ∈ vs && return collect(vs)
+  push!(vs, v)
+  foreach(n -> collectv(n.vertex, vs), inputs(v))
+  foreach(v′ -> collectv(v′, vs), outputs(v))
+  return collect(vs)
 end
 
 function isreaching(from::Vertex, to::Vertex, seen = OSet())
@@ -47,4 +45,23 @@ function isreaching(from::Vertex, to::Vertex, seen = OSet())
   any(n -> n.vertex ≡ from || isreaching(from, n.vertex, seen), inputs(to))
 end
 
-<(a::Vertex, b::Vertex) = isreaching(a, b)
+Base.isless(a::Vertex, b::Vertex) = isreaching(a, b)
+
+<<(a::Vertex, b::Vertex) = a < b && !(a > b)
+
+toposort!(vs) = sort!(vs, lt = (x, y) -> !(y << x), alg = MergeSort)
+
+function istopo(vs)
+  for i = 1:length(vs)
+    for j = 1:i-1
+      !(vs[i] << vs[j]) || return false
+    end
+    for j = i+1:length(vs)
+      !(vs[j] << vs[i]) || return false
+    end
+  end
+  return true
+end
+
+↺(v::Vertex) = v < v
+↺(a::Vertex, b::Vertex) = a < b && b < a

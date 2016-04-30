@@ -23,7 +23,3 @@ end
 vertex(a...) = DVertex{Any}(a...)
 
 dl(v::Vertex) = convert(DVertex, v)
-
-anchors(v::DVertex) = filter(isfinal, collectv(v))
-
-isfloating(v::DVertex) = !any(out -> v < out || v ≡ out, anchors(v))

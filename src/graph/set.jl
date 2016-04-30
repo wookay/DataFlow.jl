@@ -1,6 +1,8 @@
+typealias ASet{T} Base.AbstractSet{T}
+
 typealias ODict ObjectIdDict
 
-immutable ObjectIdSet{T}
+immutable ObjectIdSet{T} <: ASet{T}
   dict::ObjectIdDict
   ObjectIdSet() = new(ObjectIdDict())
 end
@@ -25,7 +27,7 @@ Base.collect(s::ObjectIdSet) = collect(keys(s.dict))
 
 typealias OSet ObjectIdSet
 
-immutable ObjectArraySet{T}
+immutable ObjectArraySet{T} <: ASet{T}
   xs::Vector{T}
   ObjectArraySet() = new(T[])
 end

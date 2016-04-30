@@ -1,3 +1,5 @@
+import Base: @get!
+
 # Syntax → Graph
 
 type LateVertex{T}
@@ -58,41 +60,25 @@ callmemaybe(f, a...) = isempty(a) ? f : :($f($(a...)))
 
 isconstant(v::DVertex) = isa(value(v), Symbol) && isempty(inputs(v))
 
-function syntax!(v::DVertex, ex, bindings = d(); bind = nout(v) > 1)
-  haskey(bindings, v) && return bindings[v]
-  x = () -> callmemaybe(value(v), [syntax!(v, ex, bindings) for v in inputs(v)]...)
-  if bind
-    isconstant(v) && return (bindings[v] = value(v))
-    @gensym edge
-    bindings[v] = edge
-    push!(ex.args, :($edge = $(x())))
-    return edge
-  else
-    x()
-  end
-end
+binding(bindings::Associative, v) = @get!(bindings, v, gensym("edge"))
 
-syntax!(n::Needle, ex, bindings = d()) =
-  syntax!(n.vertex, ex, bindings) # FIXME
-
-function floatanchors(v::DVertex)
-  vs = filter(isfloating, collectv(v))
-  vs′ = typeof(v)[]
-  for v in vs
-    any(v′ -> v < v′, vs′) || push!(vs′, v)
-  end
-  vs′
-end
-
-function syntax(v::DVertex)
+function syntax(head::DVertex)
+  vs = toposort!(collectv(head))
+  @assert istopo(vs)
   ex, bs = :(;), d()
-  for v in floatanchors(v)
-    syntax!(v, ex, bs, bind = true)
+  for v in vs
+    x = callmemaybe(value(v), [binding(bs, n.vertex) for n in inputs(v)]...)
+    if isconstant(v)
+      bs[v] = value(v)
+    elseif nout(v) > 1 || haskey(bs, v) || (!isfinal(head) && v ≡ head)
+      edge = binding(bs, v)
+      push!(ex.args, :($edge = $x))
+    else
+      isfinal(v) ? push!(ex.args, x) : (bs[v] = x)
+    end
   end
-  for v in sort!(anchors(v), by = x -> x === v)
-    push!(ex.args, syntax!(v, ex, bs))
-  end
-  ex
+  !isfinal(head) && push!(ex.args, binding(bs, head))
+  return ex
 end
 
 function constructor(ex)
@@ -116,6 +102,7 @@ function Base.show(io::IO, v::Vertex)
   println(io, typeof(v))
   s = MacroTools.alias_gensyms(syntax(v))
   print(io, join([sprint(print, x) for x in s.args], "\n"))
+  # print(io, typeof(v), "(", value(v), ")")
 end
 
 # Function / expression macros
