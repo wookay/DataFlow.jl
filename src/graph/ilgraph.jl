@@ -1,6 +1,6 @@
 type IVertex{T} <: Vertex{T}
   value::T
-  inputs::Vector{Needle{IVertex{T}}}
+  inputs::Vector{IVertex{T}}
 
   IVertex(x) = new(x, [])
 end
@@ -12,7 +12,7 @@ inputs(v::IVertex) = v.inputs
 outputs(v::IVertex) = []
 nout(v::IVertex) = 0
 
-function thread!(to::IVertex, from::Needle)
+function thread!(to::IVertex, from::IVertex)
   push!(inputs(to), from)
   return to
 end
@@ -24,7 +24,7 @@ function walk(v::IVertex, pre, post, cache = ODict())
   v′ = pre(v)
   w = cache[v] = head(v′)
   for n in inputs(v′)
-    thread!(w, typeof(n)(walk(n.vertex, pre, post, cache), n.output))
+    thread!(w, walk(n, pre, post, cache))
   end
   return post(w)
 end
@@ -40,7 +40,7 @@ function hash(v::IVertex, h::UInt = UInt(0), seen = OSet())
   h = hash(value(v), h)
   v in seen ? (return h) : push!(seen, v)
   for n in inputs(v)
-    h $= hash(n.vertex, hash(n.output), seen)
+    h $= hash(n, h, seen)
   end
   return h
 end

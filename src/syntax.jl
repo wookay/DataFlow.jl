@@ -67,7 +67,7 @@ function syntax(head::DVertex)
   @assert istopo(vs)
   ex, bs = :(;), d()
   for v in vs
-    x = callmemaybe(value(v), [binding(bs, n.vertex) for n in inputs(v)]...)
+    x = callmemaybe(value(v), [binding(bs, n) for n in inputs(v)]...)
     if isconstant(v)
       bs[v] = value(v)
     elseif nout(v) > 1 || haskey(bs, v) || (!isfinal(head) && v ≡ head)

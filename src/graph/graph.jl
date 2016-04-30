@@ -4,19 +4,10 @@ abstract Vertex{T}
 
 Base.eltype{T}(::Vertex{T}) = T
 
-immutable Needle{T}
-  vertex::T
-  output::Int
-end
-
-==(a::Needle, b::Needle) = a.output == b.output && a.vertex == b.vertex
-
 include("set.jl")
 include("dlgraph.jl")
 include("ilgraph.jl")
 include("conversions.jl")
-
-thread!{T<:Vertex}(to::T, from::T) = thread!(to, Needle(from, 1))
 
 thread!(to::Vertex, from) = thread!(to, typeof(to)(from))
 
@@ -34,7 +25,7 @@ isfinal(v::Vertex) = nout(v) == 0
 function collectv(v::Vertex, vs = OASet{eltype(v)}())
   v ∈ vs && return collect(vs)
   push!(vs, v)
-  foreach(n -> collectv(n.vertex, vs), inputs(v))
+  foreach(v′ -> collectv(v′, vs), inputs(v))
   foreach(v′ -> collectv(v′, vs), outputs(v))
   return collect(vs)
 end
@@ -42,7 +33,7 @@ end
 function isreaching(from::Vertex, to::Vertex, seen = OSet())
   to ∈ seen && return false
   push!(seen, to)
-  any(n -> n.vertex ≡ from || isreaching(from, n.vertex, seen), inputs(to))
+  any(v -> v ≡ from || isreaching(from, v, seen), inputs(to))
 end
 
 Base.isless(a::Vertex, b::Vertex) = isreaching(a, b)
