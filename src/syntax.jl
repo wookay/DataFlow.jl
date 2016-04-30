@@ -81,6 +81,8 @@ function syntax(head::DVertex)
   return ex
 end
 
+# TODO: handle pre-constructor references
+
 function constructor(ex)
   ex = MacroTools.prewalk(ex) do x
     @capture(x, f_(a__)) ? :(vertex($f, $(a...))) : x
