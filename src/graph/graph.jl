@@ -17,8 +17,15 @@ thread!(v::Vertex, xs...) = reduce(thread!, v, xs)
 
 head(v::Vertex) = typeof(v)(value(v))
 
-nout(v::Vertex) = length(outputs(v)) # FIXME
 nin(v::Vertex) = length(inputs(v))
+
+function nout(v::Vertex)
+  n = 0
+  for o in outputs(v), i in inputs(o)
+    i ≡ v && (n += 1)
+  end
+  return n
+end
 
 isfinal(v::Vertex) = nout(v) == 0
 
