@@ -29,6 +29,9 @@ end
 
 isfinal(v::Vertex) = nout(v) == 0
 
+Base.getindex(v::Vertex, i::Integer) = inputs(v)[i]
+Base.getindex(v::Vertex, is::Integer...) = reduce(getindex, v, is)
+
 function collectv(v::Vertex, vs = OASet{eltype(v)}())
   v ∈ vs && return collect(vs)
   push!(vs, v)
