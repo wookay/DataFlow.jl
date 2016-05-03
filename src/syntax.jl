@@ -1,5 +1,7 @@
 import Base: @get!
 
+export @flow
+
 # Syntax → Graph
 
 type LateVertex{T}

@@ -1,3 +1,5 @@
+export Vertex, DVertex, IVertex
+
 import Base: copy, hash, ==, <, <<
 
 abstract Vertex{T}
