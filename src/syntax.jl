@@ -68,12 +68,12 @@ isconstant(v::DVertex) = isempty(inputs(v))
 
 binding(bindings::Associative, v) = @get!(bindings, v, gensym("edge"))
 
-function syntax(head::DVertex)
+function syntax(head::DVertex; flatconst = true)
   vs = topo(head)
   ex, bs = :(;), d()
   for v in vs
     x = callmemaybe(value(v), [binding(bs, n) for n in inputs(v)]...)
-    if isconstant(v)
+    if flatconst && isconstant(v) && nout(v) > 1
       bs[v] = value(v)
     elseif nout(v) > 1 || (!isfinal(head) && v ≡ head)
       edge = binding(bs, v)
