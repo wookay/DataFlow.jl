@@ -1,4 +1,4 @@
-export Vertex, DVertex, IVertex
+export Vertex, DVertex, IVertex, thread!, topo
 
 import Base: copy, hash, ==, <, <<
 
@@ -42,6 +42,21 @@ function collectv(v::Vertex, vs = OASet{typeof(v)}())
   return collect(vs)
 end
 
+function topo_up(v::Vertex, vs, seen)
+  v ∈ seen && return vs
+  push!(seen, v)
+  foreach(v′ -> topo_up(v′, vs, seen), inputs(v))
+  push!(vs, v)
+end
+
+function topo(v::Vertex)
+  seen, vs = OSet{typeof(v)}(), typeof(v)[]
+  for v in collectv(v)
+    topo_up(v, vs, seen)
+  end
+  return vs
+end
+
 function isreaching(from::Vertex, to::Vertex, seen = OSet())
   to ∈ seen && return false
   push!(seen, to)
@@ -51,20 +66,6 @@ end
 Base.isless(a::Vertex, b::Vertex) = isreaching(a, b)
 
 <<(a::Vertex, b::Vertex) = a < b && !(a > b)
-
-toposort!(vs) = sort!(vs, lt = (x, y) -> !(y << x), alg = MergeSort)
-
-function istopo(vs)
-  for i = 1:length(vs)
-    for j = 1:i-1
-      !(vs[i] << vs[j]) || return false
-    end
-    for j = i+1:length(vs)
-      !(vs[j] << vs[i]) || return false
-    end
-  end
-  return true
-end
 
 ↺(v::Vertex) = v < v
 ↺(a::Vertex, b::Vertex) = a < b && b < a

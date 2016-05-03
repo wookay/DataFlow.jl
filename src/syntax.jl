@@ -65,8 +65,7 @@ isconstant(v::DVertex) = isa(value(v), Symbol) && isempty(inputs(v))
 binding(bindings::Associative, v) = @get!(bindings, v, gensym("edge"))
 
 function syntax(head::DVertex)
-  vs = toposort!(collectv(head))
-  @assert istopo(vs)
+  vs = topo(head)
   ex, bs = :(;), d()
   for v in vs
     x = callmemaybe(value(v), [binding(bs, n) for n in inputs(v)]...)
