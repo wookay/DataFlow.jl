@@ -20,6 +20,7 @@ Base.in(x, s::ObjectIdSet) = haskey(s.dict, x)
 ObjectIdSet(xs) = ObjectIdSet{eltype(xs)}(xs)
 
 Base.collect(s::ObjectIdSet) = collect(keys(s.dict))
+Base.similar(s::ObjectIdSet, T::Type) = ObjectIdSet{T}()
 
 @forward ObjectIdSet.dict Base.length
 
@@ -40,6 +41,7 @@ Base.push!(s::ObjectArraySet, x) = (x ∉ s && push!(s.xs, x); s)
 ObjectArraySet(xs) = ObjectArraySet{eltype(xs)}(xs)
 
 Base.collect(xs::ObjectArraySet) = xs.xs
+Base.similar(s::ObjectArraySet, T::Type) = ObjectArraySet{T}()
 
 @forward ObjectArraySet.xs Base.length
 
