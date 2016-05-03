@@ -12,7 +12,10 @@ end
 function latenodes(exs)
   bindings = d()
   for ex in exs
-    @capture(ex, b_Symbol = f_(a__)) || error("invalid flow binding `$ex`")
+    @capture(ex, (b_ = x_) | x_)
+    b = @or b gensym("edge")
+    @capture(x, f_(a__) | f_)
+    a = @or a []
     bindings[b] = LateVertex(vertex(f), a)
   end
   return bindings
