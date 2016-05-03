@@ -86,7 +86,7 @@ function syntax(head::DVertex; flatconst = true)
       isfinal(v) ? push!(ex.args, x) : (bs[v] = x)
     end
   end
-  !isfinal(head) && push!(ex.args, binding(bs, head))
+  head ≢ vs[end] && push!(ex.args, binding(bs, head))
   return ex
 end
 
