@@ -3,9 +3,9 @@
 type DVertex{T} <: Vertex{T}
   value::T
   inputs::Vector{DVertex{T}}
-  outputs::OSet{DVertex{T}}
+  outputs::OASet{DVertex{T}}
 
-  DVertex(x) = new(x, [], OSet{DVertex{T}}())
+  DVertex(x) = new(x, [], OASet{DVertex{T}}())
 end
 
 DVertex(x) = DVertex{typeof(x)}(x)
