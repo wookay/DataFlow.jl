@@ -81,7 +81,11 @@ function syntax(head::DVertex; flatconst = true)
       edge = binding(bs, v)
       push!(ex.args, :($edge = $x))
     elseif haskey(bs, v)
-      ex = MacroTools.replace(ex, bs[v], x)
+      if MacroTools.inexpr(ex, bs[v])
+        ex = MacroTools.replace(ex, bs[v], x)
+      else
+        push!(ex.args, :($(bs[v]) = $x))
+      end
     else
       isfinal(v) ? push!(ex.args, x) : (bs[v] = x)
     end
