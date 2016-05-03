@@ -24,6 +24,7 @@ graphm(bindings, ex::Symbol) =
 graphm(bindings, node::LateVertex) = node.val
 
 function graphm(bindings, ex::Expr)
+  isexpr(ex, :block) && return graphm(bindings, ex.args)
   @capture(ex, f_(args__)) || error("invalid flow expression `$ex`")
   vertex(f, map(ex -> graphm(bindings, ex), args)...)
 end
