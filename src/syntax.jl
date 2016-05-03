@@ -9,12 +9,18 @@ type LateVertex{T}
   args::Vector{Any}
 end
 
+function normedges(ex)
+  ex = copy(ex)
+  map!(ex.args) do ex
+    @capture(ex, _ = _) ? ex : :($(gensym("edge")) = $ex)
+  end
+  return ex
+end
+
 function latenodes(exs)
   bindings = d()
   for ex in exs
-    @capture(ex, (b_ = x_) | x_)
-    b = @or b gensym("edge")
-    @capture(x, f_(a__) | f_)
+    @capture(ex, b_Symbol = (f_(a__) | f_)) || error("invalid flow binding `$ex`")
     a = @or a []
     bindings[b] = LateVertex(vertex(f), a)
   end
@@ -32,15 +38,10 @@ function graphm(bindings, ex::Expr)
   vertex(f, map(ex -> graphm(bindings, ex), args)...)
 end
 
-function extractresult!(args)
-  @match args[end] begin
-    (return a_) => (args[end] = a; extractresult!(args))
-    (out_ = _) => out
-    _ => pop!(args)
-  end
-end
-
 function fillnodes!(bindings)
+  for (b, node) in bindings
+    isa(node, LateVertex) && haskey(bindings, node.val.value) && (bindings[b] = bindings[node.val.value].val)
+  end
   for (b, node) in bindings
     isa(node, LateVertex) || continue
     for arg in node.args
@@ -52,7 +53,8 @@ function fillnodes!(bindings)
 end
 
 function graphm(bindings, exs::Vector)
-  result = extractresult!(exs)
+  exs = normedges(:($(exs...);)).args
+  @capture(exs[end], result_Symbol = _)
   merge!(bindings, latenodes(exs))
   fillnodes!(bindings)
   output = graphm(bindings, result)
