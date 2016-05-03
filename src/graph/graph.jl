@@ -51,7 +51,7 @@ end
 
 function topo(v::Vertex)
   seen, vs = OSet{typeof(v)}(), typeof(v)[]
-  for v in collectv(v)
+  for v in sort!(collectv(v), by = x -> x ≡ v)
     topo_up(v, vs, seen)
   end
   return vs
