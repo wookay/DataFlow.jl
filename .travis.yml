@@ -11,4 +11,4 @@ notifications:
 # uncomment the following lines to override the default test script
 script:
  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
- - julia -e 'Pkg.clone("Lazy"); Pkg.clone(pwd()); Pkg.build("Flow"); Pkg.test("Flow"; coverage=true)'
+ - julia -e 'Pkg.clone("MacroTools"); Pkg.clone("Lazy"); Pkg.clone(pwd()); Pkg.build("Flow"); Pkg.test("Flow"; coverage=true)'
