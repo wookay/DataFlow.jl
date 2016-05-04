@@ -13,7 +13,7 @@ il = grow(IVertex, nodes)
 
 @test @> il Flow.dl() Flow.il() equal(il)
 
-@test copy(il) == il == prewalk(il, identity)
+@test copy(il) == il == prewalk(identity, il)
 
 end
 
@@ -36,6 +36,9 @@ end
 @test @capture syntax(var.output) begin
   sumabs2(xs)/length(xs) - (sum(xs) / length(xs)) ^ 2
 end
+
+@test contains(sprint(show, var),
+               string(:(sumabs2(xs)/length(xs) - (sum(xs) / length(xs)) ^ 2)))
 
 @test @capture syntax(cse(var.output)) begin
   n_Symbol = length(xs)
