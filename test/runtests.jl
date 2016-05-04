@@ -13,7 +13,7 @@ il = grow(IVertex, nodes)
 
 @test @> il Flow.dl() Flow.il() equal(il)
 
-@test copy(il) == il
+@test copy(il) == il == prewalk(il, identity)
 
 end
 
