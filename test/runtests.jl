@@ -40,7 +40,7 @@ end
 @test contains(sprint(show, var),
                string(:(sumabs2(xs)/length(xs) - (sum(xs) / length(xs)) ^ 2)))
 
-@test @capture syntax(cse(var.output)) begin
-  n_Symbol = length(xs)
-  sumabs2(xs)/n_Symbol - (sum(xs) / n_Symbol) ^ 2
-end
+@test cse(var.output) == convert(IVertex, @flow begin
+  n = length(xs)
+  sumabs2(xs)/n - (sum(xs) / n) ^ 2
+end)
