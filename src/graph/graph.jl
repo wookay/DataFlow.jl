@@ -57,15 +57,15 @@ function topo(v::Vertex)
   return vs
 end
 
-function isreaching(from::Vertex, to::Vertex, seen = OSet())
-  to ∈ seen && return false
-  push!(seen, to)
-  any(v -> v ≡ from || isreaching(from, v, seen), inputs(to))
-end
-
-Base.isless(a::Vertex, b::Vertex) = isreaching(a, b)
-
-<<(a::Vertex, b::Vertex) = a < b && !(a > b)
-
-↺(v::Vertex) = v < v
-↺(a::Vertex, b::Vertex) = a < b && b < a
+# function isreaching(from::Vertex, to::Vertex, seen = OSet())
+#   to ∈ seen && return false
+#   push!(seen, to)
+#   any(v -> v ≡ from || isreaching(from, v, seen), inputs(to))
+# end
+#
+# Base.isless(a::Vertex, b::Vertex) = isreaching(a, b)
+#
+# <<(a::Vertex, b::Vertex) = a < b && !(a > b)
+#
+# ↺(v::Vertex) = v < v
+# ↺(a::Vertex, b::Vertex) = a < b && b < a
