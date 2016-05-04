@@ -9,4 +9,10 @@ dl = grow(DVertex, nodes)
 
 @test @> dl syntax(flatconst = false) graphm equal(dl)
 
+il = grow(IVertex, nodes)
+
+@test @> il Flow.dl() Flow.il() equal(il)
+
+@test copy(il) == il
+
 end
