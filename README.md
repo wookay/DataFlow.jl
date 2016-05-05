@@ -59,7 +59,7 @@ Another unusual feature of Flow is that it supports cycles, for example:
 ```julia
 @flow function recurrent(x)
   hidden = σ( Wxh*x + Whh*hidden )
-  return σ( Why*hidden + Wxy*x )
+  y = σ( Why*hidden + Wxy*x )
 end
 ```
 
