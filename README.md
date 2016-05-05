@@ -8,7 +8,7 @@ Flow is a Julia library providing data structures and algorithms for expressing 
 
 What's the common thread among frameworks for things like parallel computing (Spark, ComputeFramework), machine learning (Theano, TensorFlow), hardware modeling and simulation (LabVIEW, Simulink), and so on? The answer is that they all take advantage of some kind of *dataflow* semantics. Instead of dealing with variables, state and updates, they explicitly model the flow of data through various operations in the program. This is well founded, as it allows for all kinds of nice things like eliding memory allocations, automatically differentiating equations, and exploiting opportunities for parallelism.
 
-At its most basic, Flow is a shared set of functionality for building such frameworks, providing the tools to represent programs and implement common optimisations. But it's also designed to solve a much deeper problem. The frameworks above all implement their own custom language and embed it into a host like Scala or Python, but that language then lacks fundamental features like syntax or functions. In their place, you build and evaluate expression trees by hand, something analogous to:
+At its most basic, Flow is a shared set of functionality for building such frameworks, providing the tools to represent programs and implement common optimisations. But it's also designed to solve a much deeper problem. Many of the frameworks above implement their own custom language and embed it into a host like Scala or Python, but that language then lacks fundamental features like syntax or functions. In their place, you build and evaluate expression trees by hand, something analogous to:
 
 ```julia
 f(x) = :($x + $x)
