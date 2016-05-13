@@ -20,7 +20,7 @@ function thread!(to::DVertex, from::DVertex)
   return to
 end
 
-vertex(a...) = DVertex{Any}(a...)
+v(a...) = DVertex{Any}(a...)
 
 dl(v::Vertex) = convert(DVertex, v)
 
