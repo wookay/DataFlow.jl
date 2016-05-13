@@ -11,7 +11,7 @@ include("dlgraph.jl")
 include("ilgraph.jl")
 include("conversions.jl")
 
-thread!(to::Vertex, from) = thread!(to, typeof(to)(from))
+thread!(to::Vertex, from) = thread!(to, convert(typeof(to), from))
 
 thread!(v::Vertex, xs...) = reduce(thread!, v, xs)
 
