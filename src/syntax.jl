@@ -1,6 +1,6 @@
 import Base: @get!
 
-export @flow
+export @flow, @flowm
 
 # Syntax → Graph
 
@@ -97,18 +97,20 @@ end
 
 # TODO: handle pre-constructor references
 
-# function constructor(ex)
-#   ex = MacroTools.prewalk(ex) do x
-#     @capture(x, f_(a__)) ? :(vertex($f, $(a...))) : x
-#   end
-#   ex′ = :(;)
-#   for x in block(ex).args
-#     @capture(x, v_ = vertex(f_, a__)) && inexpr(x.args[2], v) ?
-#       push!(ex′.args, :($v = vertex($f)), :(thread!($v, $(a...)))) :
-#       push!(ex′.args, x)
-#   end
-#   return ex′
-# end
+function constructor(ex)
+  ex = MacroTools.postwalk(ex) do x
+    @capture(x, f_(as__)) && f != :v ?
+      :(v($f, $([!isexpr(a, :call) ? :(v($a)) : a for a in as]...))) :
+      x
+  end
+  ex′ = :(;)
+  for x in block(ex).args
+    @capture(x, v_ = v(f_, a__)) && inexpr(x.args[2], v) ?
+      push!(ex′.args, :($v = v($f)), :(thread!($v, $(a...)))) :
+      push!(ex′.args, x)
+  end
+  return ex′
+end
 
 # Display
 
@@ -148,6 +150,11 @@ end
 
 macro flow(ex)
   isdef(ex) && return flow_func(ex)
-  @capture(ex, exs__)
+  exs = block(ex).args
+  constructor(syntax(graphm(exs)))
+end
+
+macro flowm(ex)
+  exs = block(ex).args
   graphm(exs)
 end
