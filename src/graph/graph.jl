@@ -1,4 +1,4 @@
-export Vertex, DVertex, IVertex, thread!, topo
+export Vertex, DVertex, IVertex, thread!, topo, v
 
 import Base: copy, hash, ==, <, <<
 
