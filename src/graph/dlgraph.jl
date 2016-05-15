@@ -22,6 +22,8 @@ end
 
 v(a...) = DVertex{Any}(a...)
 
+v(x::Vertex) = convert(DVertex{Any}, x)
+
 dl(v::Vertex) = convert(DVertex, v)
 
 function equal(a::Vertex, b::Vertex, seen = OSet())
