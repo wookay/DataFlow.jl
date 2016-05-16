@@ -49,9 +49,9 @@ function Base.map(f, v::Vertex; cache = ODict())
   haskey(cache, v) && return cache[v]
   node = cache[v] = DVertex{Any}(f(value(v)))
   for out in outputs(v)
-    push!(node.outputs, @show map(f, out, cache = cache))
+    push!(node.outputs, map(f, out, cache = cache))
   end
-  for in in @show inputs(v)
+  for in in inputs(v)
     push!(node.inputs, map(f, in, cache = cache))
   end
   return node
