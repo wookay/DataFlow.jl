@@ -61,7 +61,7 @@ end
 
 function Base.map(f, v::Vertex; cache = ODict())
   haskey(cache, v) && return cache[v]
-  node = cache[v] = DVertex{Any}(f(value(v)))
+  node = cache[v] = typeof(v)(f(value(v)))
   for out in outputs(v)
     push!(node.outputs, map(f, out, cache = cache))
   end
@@ -70,3 +70,5 @@ function Base.map(f, v::Vertex; cache = ODict())
   end
   return node
 end
+
+copy(v::DVertex) = map(identity, v)
