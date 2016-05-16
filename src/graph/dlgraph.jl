@@ -26,6 +26,18 @@ v(x::Vertex) = convert(DVertex{Any}, x)
 
 dl(v::Vertex) = convert(DVertex, v)
 
+nin(v::Vertex) = length(inputs(v))
+
+function nout(v::Vertex)
+  n = 0
+  for o in outputs(v), i in inputs(o)
+    i ≡ v && (n += 1)
+  end
+  return n
+end
+
+isfinal(v::Vertex) = nout(v) == 0
+
 function equal(a::Vertex, b::Vertex, seen = OSet())
   (a, b) ∈ seen && return true
   (value(a) == value(b) &&

@@ -9,7 +9,7 @@ IVertex(x) = IVertex{typeof(x)}(x)
 
 value(v::IVertex) = v.value
 inputs(v::IVertex) = v.inputs
-outputs(v::IVertex) = []
+outputs(v::IVertex) = ()
 nout(v::IVertex) = 0
 
 function thread!(to::IVertex, from::IVertex)
