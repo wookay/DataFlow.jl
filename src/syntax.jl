@@ -97,12 +97,14 @@ end
 
 # TODO: handle pre-constructor references
 
+call2v(x) = x
+call2v(ex::Expr) =
+  isexpr(ex, :call) ?
+    Expr(:call, :v, ex.args[1], map(x -> isexpr(x, :call) ? call2v(x) : :(v($x)), ex.args[2:end])...) :
+    Expr(ex.head, map(call2v, ex.args)...)
+
 function constructor(ex)
-  ex = MacroTools.postwalk(ex) do x
-    @capture(x, f_(as__)) && f != :v ?
-      :(v($f, $([!isexpr(a, :call) ? :(v($a)) : a for a in as]...))) :
-      x
-  end
+  ex = call2v(ex)
   ex′ = :(;)
   for x in block(ex).args
     @capture(x, v_ = v(f_, a__)) && inexpr(x.args[2], v) ?
