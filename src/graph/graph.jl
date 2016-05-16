@@ -13,14 +13,14 @@ include("conversions.jl")
 
 thread!(to::Vertex, from) = thread!(to, convert(typeof(to), from))
 
-thread!(v::Vertex, xs...) = reduce(thread!, v, xs)
+thread!(v::Vertex, xs...) = foldl(thread!, v, xs)
 
 (::Type{T}){T<:Vertex}(x, args...) = thread!(T(x), args...)
 
 head(v::Vertex) = typeof(v)(value(v))
 
 Base.getindex(v::Vertex, i::Integer) = inputs(v)[i]
-Base.getindex(v::Vertex, is::Integer...) = reduce(getindex, v, is)
+Base.getindex(v::Vertex, is::Integer...) = foldl(getindex, v, is)
 
 function collectv(v::Vertex, vs = OASet{typeof(v)}())
   v ∈ vs && return collect(vs)
