@@ -151,7 +151,7 @@ end
 macro flow(ex)
   isdef(ex) && return flow_func(ex)
   exs = block(ex).args
-  constructor(syntax(graphm(exs)))
+  @>> exs graphm map(esc) syntax constructor
 end
 
 macro flowm(ex)
