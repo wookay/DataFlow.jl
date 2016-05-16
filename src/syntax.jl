@@ -67,7 +67,7 @@ graphm(x) = graphm(d(), x)
 
 callmemaybe(f, a...) = isempty(a) ? f : :($f($(a...)))
 
-isconstant(v::DVertex) = isempty(inputs(v))
+isconstant(v::Vertex) = isempty(inputs(v))
 
 binding(bindings::Associative, v) = @get!(bindings, v, gensym("edge"))
 
