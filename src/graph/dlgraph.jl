@@ -44,3 +44,15 @@ function equal(a::Vertex, b::Vertex, seen = OSet())
   end
   return true
 end
+
+function Base.map(f, v::Vertex; cache = ODict())
+  haskey(cache, v) && return cache[v]
+  node = cache[v] = DVertex{Any}(f(value(v)))
+  for out in outputs(v)
+    push!(node.outputs, @show map(f, out, cache = cache))
+  end
+  for in in @show inputs(v)
+    push!(node.inputs, map(f, in, cache = cache))
+  end
+  return node
+end
