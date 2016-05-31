@@ -6,6 +6,9 @@ abstract Vertex{T}
 
 Base.eltype{T}(::Vertex{T}) = T
 
+Base.show{T<:Vertex}(io::IO, ::Type{T}) =
+  print(io, T.name.name, (T.parameters[1] == Any ? [] : ["{", T.parameters[1], "}"])...)
+
 include("set.jl")
 include("dlgraph.jl")
 include("ilgraph.jl")
