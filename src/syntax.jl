@@ -119,10 +119,15 @@ end
 syntax(v::Vertex) = syntax(dl(v))
 
 function Base.show(io::IO, v::Vertex)
-  println(io, typeof(v))
+  print(io, typeof(v))
+  print(io, "(")
   s = MacroTools.alias_gensyms(syntax(v))
-  print(io, join([sprint(print, x) for x in s.args], "\n"))
-  # print(io, typeof(v), "(", value(v), ")")
+  if length(s.args) == 1
+    print(io, sprint(print, s.args[1]))
+  else
+    foreach(x -> (println(io); print(io, sprint(print, x))), s.args)
+  end
+  print(io, ")")
 end
 
 # Function / expression macros
