@@ -34,8 +34,19 @@ postwalk(f, v::IVertex) = walk(v, identity, f)
 
 copy(v::IVertex) = walk(v, identity, identity)
 
-prefor(f, v::IVertex) = prewalk(v -> (f(v); v), v)
-postfor(f, v::IVertex) = postwalk(v -> (f(v); v), v)
+function walkfor(v::IVertex, pre, post, seen = OSet())
+  v in seen && return
+  push!(seen, v)
+  pre(v)
+  for n in inputs(v)
+    walkfor(n, pre, post, seen)
+  end
+  post(v)
+  return
+end
+
+prefor(f, v::IVertex) = walkfor(v, f, identity)
+postfor(f, v::IVertex) = walkfor(v, identity, f)
 
 # TODO: check we don't get equivalent hashes for different graphs
 
