@@ -34,6 +34,9 @@ postwalk(f, v::IVertex) = walk(v, identity, f)
 
 copy(v::IVertex) = walk(v, identity, identity)
 
+prefor(f, v::IVertex) = prewalk(v -> (f(v); v), v)
+postfor(f, v::IVertex) = postwalk(v -> (f(v); v), v)
+
 # TODO: check we don't get equivalent hashes for different graphs
 
 function hash(v::IVertex, h::UInt = UInt(0), seen = OSet())
@@ -46,3 +49,9 @@ function hash(v::IVertex, h::UInt = UInt(0), seen = OSet())
 end
 
 ==(a::IVertex, b::IVertex) = hash(a) == hash(b)
+
+function iscyclic(v::IVertex)
+  is = false
+  prefor(v -> is |= ↺(v), v)
+  return is
+end
