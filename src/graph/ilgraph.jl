@@ -34,6 +34,8 @@ postwalk(f, v::IVertex) = walk(v, identity, f)
 
 copy(v::IVertex) = walk(v, identity, identity)
 
+Base.replace(v::IVertex, pat, r) = prewalk(v -> v == pat ? r : v, v)
+
 function walkfor(v::IVertex, pre, post, seen = OSet())
   v in seen && return
   push!(seen, v)
