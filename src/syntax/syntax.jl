@@ -53,6 +53,6 @@ macro flow(ex)
 end
 
 macro v(ex)
-  exs = block(ex).args
+  exs = rmlines(block(ex)).args
   @>> exs graphm map(esc) syntax constructor (x->:(v($x)))
 end
