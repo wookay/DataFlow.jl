@@ -19,15 +19,21 @@ end
 
 il(v::Vertex) = convert(IVertex, v)
 
-function walk(v::IVertex, pre, post, cache = ODict())
+function walk!(v::IVertex, pre, post, cache = ODict())
   haskey(cache, v) && return cache[v]::typeof(v)
-  v′ = pre(v)
-  w = cache[v] = head(v′)
-  for n in inputs(v′)
-    thread!(w, walk(n, pre, post, cache))
+  cache[v] = v′ = pre(v)
+  map!(v′.inputs) do n
+    walk!(n, pre, post, cache)
   end
-  return post(w)
+  return post(v′)
 end
+
+prewalk!(f, v::IVertex) = walk!(v, f, identity)
+postwalk!(f, v::IVertex) = walk!(v, identity, f)
+
+copy1(v::IVertex) = typeof(v)(v.value, v.inputs...)
+
+walk(v::IVertex, pre, post) = walk!(v, v -> copy1(pre(v)), post)
 
 prewalk(f, v::IVertex) = walk(v, f, identity)
 postwalk(f, v::IVertex) = walk(v, identity, f)
@@ -35,20 +41,6 @@ postwalk(f, v::IVertex) = walk(v, identity, f)
 copy(v::IVertex) = walk(v, identity, identity)
 
 Base.replace(v::IVertex, pat, r) = prewalk(v -> v == pat ? r : v, v)
-
-function walkfor(v::IVertex, pre, post, seen = OSet())
-  v in seen && return
-  push!(seen, v)
-  pre(v)
-  for n in inputs(v)
-    walkfor(n, pre, post, seen)
-  end
-  post(v)
-  return
-end
-
-prefor(f, v::IVertex) = walkfor(v, f, identity)
-postfor(f, v::IVertex) = walkfor(v, identity, f)
 
 # TODO: check we don't get equivalent hashes for different graphs
 
