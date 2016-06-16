@@ -1,3 +1,5 @@
+export prewalk, postwalk, prewalk!, postwalk!
+
 type IVertex{T} <: Vertex{T}
   value::T
   inputs::Vector{IVertex{T}}
@@ -22,9 +24,7 @@ il(v::Vertex) = convert(IVertex, v)
 function walk!(v::IVertex, pre, post, cache = ODict())
   haskey(cache, v) && return cache[v]::typeof(v)
   cache[v] = v′ = pre(v)
-  map!(v′.inputs) do n
-    walk!(n, pre, post, cache)
-  end
+  map!(v -> walk!(v, pre, post, cache), v′.inputs)
   return post(v′)
 end
 
