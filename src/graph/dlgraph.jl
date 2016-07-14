@@ -59,16 +59,18 @@ function equal(a::Vertex, b::Vertex, seen = OSet())
   return true
 end
 
-function Base.map(f, v::Vertex; cache = ODict())
+function mapv(f, v::Vertex; cache = ODict())
   haskey(cache, v) && return cache[v]
-  node = cache[v] = typeof(v)(f(value(v)))
+  node = cache[v] = typeof(v)(value(v))
   for out in outputs(v)
-    push!(node.outputs, map(f, out, cache = cache))
+    push!(node.outputs, mapv(f, out, cache = cache))
   end
   for in in inputs(v)
-    push!(node.inputs, map(f, in, cache = cache))
+    push!(node.inputs, mapv(f, in, cache = cache))
   end
-  return node
+  return f(node)
 end
 
-copy(v::DVertex) = map(identity, v)
+Base.map(f, v::DVertex) = mapv(v -> (v.value = f(v.value); v), v)
+
+copy(v::DVertex) = mapv(identity, v)
