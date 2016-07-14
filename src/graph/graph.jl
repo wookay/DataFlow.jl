@@ -1,5 +1,5 @@
 export Vertex, DVertex, IVertex, thread!, topo, vertex, v, value, inputs, outputs,
-  iscyclic
+  iscyclic, ↺
 
 import Base: copy, hash, ==, <, <<
 
@@ -20,8 +20,6 @@ thread!(to::Vertex, from) = thread!(to, convert(typeof(to), from))
 thread!(v::Vertex, xs...) = foldl(thread!, v, xs)
 
 (::Type{T}){T<:Vertex}(x, args...) = thread!(T(x), args...)
-
-head(v::Vertex) = typeof(v)(value(v))
 
 Base.getindex(v::Vertex, i::Integer) = inputs(v)[i]
 Base.getindex(v::Vertex, is::Integer...) = foldl(getindex, v, is)

@@ -42,6 +42,8 @@ copy(v::IVertex) = walk(v, identity, identity)
 
 Base.replace(v::IVertex, pat, r) = prewalk(v -> v == pat ? r : v, v)
 
+prefor(f, v) = prewalk!(v -> (f(v); v), v)
+
 # TODO: check we don't get equivalent hashes for different graphs
 
 function hash(v::IVertex, h::UInt = UInt(0), seen = OSet())
