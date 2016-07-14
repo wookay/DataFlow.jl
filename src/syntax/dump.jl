@@ -6,11 +6,12 @@ tocall(f, a...) = callmemaybe(f, a...)
 
 isconstant(v::Vertex) = isempty(inputs(v))
 
-binding(bindings::Associative, v) = @get!(bindings, v, gensym("edge"))
+binding(bindings::Associative, v) =
+  haskey(bindings, v) ? bindings[v] : (bindings[v] = gensym("edge"))
 
 function syntax(head::DVertex; flatconst = true)
   vs = topo(head)
-  ex, bs = :(;), d()
+  ex, bs = :(;), ObjectIdDict()
   for v in vs
     x = tocall(value(v), [binding(bs, n) for n in inputs(v)]...)
     if flatconst && isconstant(v) && nout(v) > 1

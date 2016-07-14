@@ -1,19 +1,19 @@
 using Flow, Flow.Fuzz
 using MacroTools, Lazy, Base.Test
 
-import Flow: equal, graphm, syntax, cse
+import Flow: graphm, syntax, cse
 
 for nodes = 1:10, tries = 1:1_000
 
 dl = grow(DVertex, nodes)
 
-@test @> dl syntax(flatconst = false) graphm equal(dl)
+@test dl == @> dl syntax(flatconst = false) graphm
 
-@test equal(copy(dl), dl)
+@test copy(dl) == dl
 
 il = grow(IVertex, nodes)
 
-@test @> il Flow.dl() Flow.il() equal(il)
+@test il == @> il Flow.dl() Flow.il()
 
 @test copy(il) == il == prewalk(identity, il)
 

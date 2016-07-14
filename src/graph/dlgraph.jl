@@ -65,6 +65,10 @@ function equal(a::Vertex, b::Vertex, seen = OSet())
   return true
 end
 
+import Base: ==
+
+x::Vertex == y::Vertex = equal(x, y)
+
 function mapv(f, v::Vertex; cache = ODict())
   haskey(cache, v) && return cache[v]
   node = cache[v] = typeof(v)(value(v))
