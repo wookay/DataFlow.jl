@@ -20,6 +20,12 @@ function thread!(to::DVertex, from::DVertex)
   return to
 end
 
+function prethread!(to::DVertex, from::DVertex)
+  unshift!(inputs(to), from)
+  push!(outputs(from), to)
+  return to
+end
+
 vertex(a...) = DVertex{Any}(a...)
 
 vertex(x::Vertex) = convert(DVertex{Any}, x)

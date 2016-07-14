@@ -34,18 +34,17 @@ end
 
 # TODO: handle pre-constructor references
 
-call2v(x) = x
-call2v(ex::Expr) =
-  isexpr(ex, :call) ?
-    Expr(:call, :v, ex.args[1], map(x -> isexpr(x, :call) ? call2v(x) : :(v($x)), ex.args[2:end])...) :
-    Expr(ex.head, map(call2v, ex.args)...)
-
-function constructor(ex)
-  ex = call2v(ex)
+function constructor(g)
+  g = mapv(g) do v
+    prethread!(v, typeof(v)(value(v)))
+    v.value = :vertex
+    v
+  end
+  ex = syntax(g)
   ex′ = :(;)
   for x in block(ex).args
-    @capture(x, v_ = v(f_, a__)) && inexpr(x.args[2], v) ?
-      push!(ex′.args, :($v = v($f)), :(thread!($v, $(a...)))) :
+    @capture(x, v_ = vertex(f_, a__)) && inexpr(x.args[2], v) ?
+      push!(ex′.args, :($v = vertex($f)), :(thread!($v, $(a...)))) :
       push!(ex′.args, x)
   end
   return ex′

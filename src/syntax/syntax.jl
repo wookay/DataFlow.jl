@@ -49,10 +49,10 @@ macro flow(ex)
   isdef(ex) && return flow_func(ex)
   g = graphm(rmlines(block(ex)).args)
   g = map(x -> isexpr(x, :$) ? esc(x.args[1]) : Expr(:quote, x), g)
-  @>> g syntax constructor (x->:(v($x)))
+  @>> g constructor
 end
 
 macro v(ex)
   exs = rmlines(block(ex)).args
-  @>> exs graphm map(esc) syntax constructor (x->:(v($x)))
+  @>> exs graphm map(esc) constructor
 end
