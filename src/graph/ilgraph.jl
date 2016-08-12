@@ -40,6 +40,8 @@ postwalk(f, v::IVertex) = walk(v, identity, f)
 
 copy(v::IVertex) = walk(v, identity, identity)
 
+Base.map(f, v::IVertex) = prewalk(v -> typeof(v)(f(value(v)), inputs(v)...), v)
+
 Base.replace(v::IVertex, pat, r) = prewalk(v -> v == pat ? r : v, v)
 
 prefor(f, v) = prewalk!(v -> (f(v); v), v)
