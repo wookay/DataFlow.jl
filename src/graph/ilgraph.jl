@@ -21,6 +21,10 @@ end
 
 il(v::Vertex) = convert(IVertex, v)
 
+vertex(a...) = IVertex{Any}(a...)
+
+vertex(x::Vertex) = convert(IVertex{Any}, x)
+
 function walk!(v::IVertex, pre, post, cache = ODict())
   haskey(cache, v) && return cache[v]::typeof(v)
   cache[v] = v′ = pre(v)

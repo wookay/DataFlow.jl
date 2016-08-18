@@ -1,7 +1,7 @@
 using Flow, Flow.Fuzz
 using MacroTools, Lazy, Base.Test
 
-import Flow: graphm, syntax, cse, vertex, constant
+import Flow: graphm, syntax, cse, dvertex, constant
 
 for nodes = 1:10, tries = 1:1_000
 
@@ -48,5 +48,5 @@ end
 end)
 
 let x = :(2+2)
-  @test @flow(foo($x)) == vertex(:foo, constant(x))
+  @test @flow(foo($x)) == dvertex(:foo, constant(x))
 end

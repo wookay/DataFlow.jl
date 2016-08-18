@@ -22,7 +22,7 @@ end
 
 # Function / expression macros
 
-export @flow, @v
+export @flow, @vertex
 
 function inputsm(args)
   bindings = d()
@@ -52,7 +52,7 @@ macro flow(ex)
   @>> g constructor
 end
 
-macro vertex(ex)
+macro dvertex(ex)
   exs = rmlines(block(ex)).args
   @>> exs graphm mapconst(esc) constructor
 end

@@ -38,15 +38,15 @@ function constructor(g)
       v.value = :constant
     else
       prethread!(v, typeof(v)(Constant(value(v))))
-      v.value = :vertex
+      v.value = :dvertex
     end
     v
   end
   ex = syntax(g)
   ex′ = :(;)
   for x in block(ex).args
-    @capture(x, v_ = vertex(f_, a__)) && inexpr(x.args[2], v) ?
-      push!(ex′.args, :($v = vertex($f)), :(thread!($v, $(a...)))) :
+    @capture(x, v_ = dvertex(f_, a__)) && inexpr(x.args[2], v) ?
+      push!(ex′.args, :($v = dvertex($f)), :(thread!($v, $(a...)))) :
       push!(ex′.args, x)
   end
   return ex′

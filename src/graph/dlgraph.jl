@@ -26,9 +26,9 @@ function prethread!(to::DVertex, from::DVertex)
   return to
 end
 
-vertex(a...) = DVertex{Any}(a...)
+dvertex(a...) = DVertex{Any}(a...)
 
-vertex(x::Vertex) = convert(DVertex{Any}, x)
+dvertex(x::Vertex) = convert(DVertex{Any}, x)
 
 dl(v::Vertex) = convert(DVertex, v)
 
