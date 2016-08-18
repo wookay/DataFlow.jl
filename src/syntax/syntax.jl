@@ -54,5 +54,5 @@ end
 
 macro vertex(ex)
   exs = rmlines(block(ex)).args
-  @>> exs graphm map(esc) constructor
+  @>> exs graphm mapconst(esc) constructor
 end
