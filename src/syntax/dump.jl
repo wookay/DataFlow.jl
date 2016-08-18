@@ -1,21 +1,17 @@
 # Graph → Syntax
 
-callmemaybe(f, a...) = isempty(a) ? f : :($f($(a...)))
-
-tocall(f, a...) = callmemaybe(f, a...)
-
-isconstant(v::Vertex) = isempty(inputs(v))
+tocall(f, a...) = :($f($(a...)))
 
 binding(bindings::Associative, v) =
   haskey(bindings, v) ? bindings[v] : (bindings[v] = gensym("edge"))
 
-function syntax(head::DVertex; flatconst = true)
+function syntax(head::DVertex; bindconst = !isfinal(head))
   vs = topo(head)
   ex, bs = :(;), ObjectIdDict()
   for v in vs
     x = tocall(value(v), [binding(bs, n) for n in inputs(v)]...)
-    if flatconst && isconstant(v) && nout(v) > 1
-      bs[v] = value(v)
+    if !bindconst && isconstant(v) && nout(v) > 1
+      bs[v] = value(v).value
     elseif nout(v) > 1 || (!isfinal(head) && v ≡ head)
       edge = binding(bs, v)
       push!(ex.args, :($edge = $x))
@@ -37,7 +33,7 @@ end
 
 function constructor(g)
   g = mapv(g) do v
-    prethread!(v, typeof(v)(value(v)))
+    prethread!(v, typeof(v)(Constant(value(v))))
     v.value = :vertex
     v
   end

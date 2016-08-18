@@ -28,7 +28,7 @@ function inputsm(args)
   bindings = d()
   for arg in args
     isa(arg, Symbol) || error("invalid argument $arg")
-    bindings[arg] = v(arg)
+    bindings[arg] = v(Constant(arg))
   end
   return bindings
 end

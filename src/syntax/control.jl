@@ -1,3 +1,11 @@
+immutable Constant{T}
+  value::T
+end
+
+tocall(c::Constant) = c.value
+
+isconstant(v::Vertex) = isa(value(v), Constant)
+
 type Do end
 
 tocall(::Do, a...) = :($(a...);)

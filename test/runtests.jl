@@ -5,17 +5,17 @@ import Flow: graphm, syntax, cse
 
 for nodes = 1:10, tries = 1:1_000
 
-dl = grow(DVertex, nodes)
+  dl = grow(DVertex, nodes)
 
-@test dl == @> dl syntax(flatconst = false) graphm
+  @test dl == @> dl syntax(bindconst = true) graphm
 
-@test copy(dl) == dl
+  @test copy(dl) == dl
 
-il = grow(IVertex, nodes)
+  il = grow(IVertex, nodes)
 
-@test il == @> il Flow.dl() Flow.il()
+  @test il == @> il Flow.dl() Flow.il()
 
-@test copy(il) == il == prewalk(identity, il)
+  @test copy(il) == il == prewalk(identity, il)
 
 end
 
