@@ -6,6 +6,8 @@ tocall(c::Constant) = c.value
 
 isconstant(v::Vertex) = isa(value(v), Constant)
 
+constant(x) = vertex(Constant(x))
+
 type Do end
 
 tocall(::Do, a...) = :($(a...);)

@@ -30,8 +30,6 @@ vertex(a...) = DVertex{Any}(a...)
 
 vertex(x::Vertex) = convert(DVertex{Any}, x)
 
-const v = vertex
-
 dl(v::Vertex) = convert(DVertex, v)
 
 nin(v::Vertex) = length(inputs(v))

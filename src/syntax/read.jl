@@ -17,21 +17,21 @@ function latenodes(exs)
   bindings = d()
   for ex in exs
     @capture(ex, b_Symbol = (f_(a__) | f_)) || error("invalid flow binding `$ex`")
-    bindings[b] = a == nothing ? v(Constant(f)) : LateVertex(v(f), a)
+    bindings[b] = a == nothing ? constant(f) : LateVertex(vertex(f), a)
   end
   return bindings
 end
 
-graphm(bindings, node) = v(Constant(node))
+graphm(bindings, node) = constant(node)
 graphm(bindings, node::Vertex) = node
 graphm(bindings, ex::Symbol) =
-  haskey(bindings, ex) ? graphm(bindings, bindings[ex]) : v(Constant(ex))
+  haskey(bindings, ex) ? graphm(bindings, bindings[ex]) : constant(ex)
 graphm(bindings, node::LateVertex) = node.val
 
 function graphm(bindings, ex::Expr)
   isexpr(ex, :block) && return graphm(bindings, rmlines(ex).args)
-  @capture(ex, f_(args__)) || return v(Constant(ex))
-  v(f, map(ex -> graphm(bindings, ex), args)...)
+  @capture(ex, f_(args__)) || return constant(ex)
+  vertex(f, map(ex -> graphm(bindings, ex), args)...)
 end
 
 function fillnodes!(bindings)

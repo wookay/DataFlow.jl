@@ -28,7 +28,7 @@ function inputsm(args)
   bindings = d()
   for arg in args
     isa(arg, Symbol) || error("invalid argument $arg")
-    bindings[arg] = v(Constant(arg))
+    bindings[arg] = constant(arg)
   end
   return bindings
 end
@@ -52,7 +52,7 @@ macro flow(ex)
   @>> g constructor
 end
 
-macro v(ex)
+macro vertex(ex)
   exs = rmlines(block(ex)).args
   @>> exs graphm map(esc) constructor
 end
