@@ -6,7 +6,10 @@ tocall(c::Constant) = c.value
 
 isconstant(v::Vertex) = isa(value(v), Constant)
 
+mapconst(f, g) = map(x -> isa(x, Constant) ? Constant(f(x.value)) : f(x), g)
+
 constant(x) = vertex(Constant(x))
+constant(v::Vertex) = vertex(v)
 
 type Do end
 
