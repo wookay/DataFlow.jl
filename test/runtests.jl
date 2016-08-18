@@ -1,7 +1,7 @@
 using Flow, Flow.Fuzz
 using MacroTools, Lazy, Base.Test
 
-import Flow: graphm, syntax, cse
+import Flow: graphm, syntax, cse, vertex, constant
 
 for nodes = 1:10, tries = 1:1_000
 
@@ -46,3 +46,7 @@ end
   n = length(xs)
   sumabs2(xs)/n - (sum(xs) / n) ^ 2
 end)
+
+let x = :(2+2)
+  @test @flow(foo($x)) == vertex(:foo, constant(x))
+end

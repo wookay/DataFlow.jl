@@ -48,7 +48,8 @@ end
 macro flow(ex)
   isdef(ex) && return flow_func(ex)
   g = graphm(rmlines(block(ex)).args)
-  g = map(x -> isexpr(x, :$) ? esc(x.args[1]) : Expr(:quote, x), g)
+  quot = x -> isexpr(x, :$) ? esc(x.args[1]) : Expr(:quote, x)
+  g = map(x -> isa(x, Constant) ? Constant(quot(x.value)) : quot(x), g)
   @>> g constructor
 end
 

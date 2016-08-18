@@ -33,8 +33,13 @@ end
 
 function constructor(g)
   g = mapv(g) do v
-    prethread!(v, typeof(v)(Constant(value(v))))
-    v.value = :vertex
+    if isconstant(v)
+      prethread!(v, typeof(v)(value(v)))
+      v.value = :constant
+    else
+      prethread!(v, typeof(v)(Constant(value(v))))
+      v.value = :vertex
+    end
     v
   end
   ex = syntax(g)
