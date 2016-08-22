@@ -19,6 +19,11 @@ function thread!(to::IVertex, from::IVertex)
   return to
 end
 
+function prethread!(to::IVertex, from::IVertex)
+  unshift!(inputs(to), from)
+  return to
+end
+
 il(v::Vertex) = convert(IVertex, v)
 
 vertex(a...) = IVertex{Any}(a...)
