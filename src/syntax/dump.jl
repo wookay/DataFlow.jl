@@ -32,20 +32,21 @@ end
 # TODO: handle pre-constructor references
 
 function constructor(g)
+  vertex = isa(g, DVertex) ? :dvertex : :vertex
   g = mapv(g) do v
     if isconstant(v)
       prethread!(v, typeof(v)(value(v)))
       v.value = :constant
     else
       prethread!(v, typeof(v)(Constant(value(v))))
-      v.value = :dvertex
+      v.value = vertex
     end
     v
   end
   ex = syntax(g)
   ex′ = :(;)
   for x in block(ex).args
-    @capture(x, v_ = dvertex(f_, a__)) && inexpr(x.args[2], v) ?
+    @capture(x, v_ = $vertex(f_, a__)) && inexpr(x.args[2], v) ?
       push!(ex′.args, :($v = dvertex($f)), :(thread!($v, $(a...)))) :
       push!(ex′.args, x)
   end
