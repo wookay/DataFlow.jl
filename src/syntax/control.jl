@@ -1,4 +1,4 @@
-export constant, dconstant, isconstant
+export Constant, constant, dconstant, isconstant
 
 immutable Constant{T}
   value::T
