@@ -29,6 +29,7 @@ immutable Split
   n::Int
 end
 
+# TODO: reverse this when printing
 function normgroups(ex)
   MacroTools.prewalk(ex) do ex
     if @capture(ex, (xs__,) = y_)
