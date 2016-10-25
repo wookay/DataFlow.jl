@@ -1,5 +1,4 @@
-export Vertex, DVertex, IVertex, thread!, topo, vertex, dvertex, value, inputs, outputs,
-  iscyclic, ↺
+export Vertex, DVertex, IVertex, vertex, dvertex
 
 import Base: copy, hash, ==, <, <<
 

@@ -31,7 +31,7 @@ end
 
 # Function / expression macros
 
-export graphm, syntax, @flow, @dvertex
+export @flow, @dvertex
 
 function inputsm(args)
   bindings = d()

@@ -1,5 +1,3 @@
-export prewalk, postwalk, prewalk!, postwalk!
-
 type IVertex{T} <: Vertex{T}
   value::T
   inputs::Vector{IVertex{T}}
