@@ -31,7 +31,7 @@ end
 
 # Function / expression macros
 
-export @flow, @iflow, @dvertex, @ivertex
+export @flow, @iflow, @vtx, @ivtx
 
 function inputsm(args)
   bindings = d()
