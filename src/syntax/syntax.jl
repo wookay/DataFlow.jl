@@ -75,9 +75,9 @@ function vtxm(ex, f = dl)
 end
 
 macro vtx(ex)
-  vertexm(ex)
+  vtxm(ex)
 end
 
 macro ivtx(ex)
-  vertexm(ex, il)
+  vtxm(ex, il)
 end
