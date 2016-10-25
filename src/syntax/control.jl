@@ -47,3 +47,5 @@ function normgroups(ex)
 end
 
 tocall(::Group, args...) = :($(args...),)
+
+group(xs...) = vertex(Group(), xs...)
