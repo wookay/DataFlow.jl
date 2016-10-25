@@ -1,6 +1,7 @@
 module Fuzz
 
 using ..Flow
+import Flow: thread!
 
 export grow
 
