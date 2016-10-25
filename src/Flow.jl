@@ -1,6 +1,6 @@
 module Flow
 
-using Lazy, MacroTools
+using Lazy, MacroTools, Juno
 
 include("graph/graph.jl")
 include("syntax/syntax.jl")
