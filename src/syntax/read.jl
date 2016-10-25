@@ -6,7 +6,7 @@ type LateVertex{T}
 end
 
 function normedges(ex)
-  ex = copy(ex)
+  ex = @> ex normgroups MacroTools.flatten rmlines
   map!(ex.args) do ex
     @capture(ex, _ = _) ? ex : :($(gensym("edge")) = $ex)
   end
@@ -29,7 +29,7 @@ graphm(bindings, ex::Symbol) =
 graphm(bindings, node::LateVertex) = node.val
 
 function graphm(bindings, ex::Expr)
-  isexpr(ex, :block) && return graphm(bindings, rmlines(ex).args)
+  isexpr(ex, :block) && return graphm(bindings, ex.args)
   @capture(ex, f_(args__)) || return constant(ex)
   dvertex(f, map(ex -> graphm(bindings, ex), args)...)
 end

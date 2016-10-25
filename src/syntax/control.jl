@@ -14,7 +14,7 @@ a::Constant == b::Constant = a.value == b.value
 
 Base.hash(c::Constant, h::UInt = UInt(0)) = hash((Constant, c.value), h)
 
-for (c, v) in [(:constant, :vertex), (:dconstant, dvertex)]
+for (c, v) in [(:constant, :vertex), (:dconstant, :dvertex)]
   @eval $c(x) = $v(Constant(x))
   @eval $c(v::Vertex) = $v(v)
 end
@@ -22,3 +22,27 @@ end
 type Do end
 
 tocall(::Do, a...) = :($(a...);)
+
+immutable Group end
+
+immutable Split
+  n::Int
+end
+
+function normgroups(ex)
+  MacroTools.prewalk(ex) do ex
+    if @capture(ex, (xs__,) = y_)
+      edge = gensym("edge")
+      quote
+        $edge = $y
+        $((:($(xs[i]) = $(Split(i))($edge)) for i = 1:length(xs))...)
+      end
+    elseif @capture(ex, (xs__,))
+      :($(Group())($(xs...)))
+    else
+      ex
+    end
+  end
+end
+
+tocall(::Group, args...) = :($(args...),)
