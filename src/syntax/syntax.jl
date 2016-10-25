@@ -65,19 +65,19 @@ macro flow(ex)
   flowm(ex)
 end
 
-macro flow(ex)
+macro iflow(ex)
   flowm(ex, il)
 end
 
-function vertexm(ex, f = dl)
+function vtxm(ex, f = dl)
   exs = graphm(block(ex))
   @>> exs graphm mapconst(esc) f constructor
 end
 
-macro dvertex(ex)
+macro vtx(ex)
   vertexm(ex)
 end
 
-macro ivertex(ex)
+macro ivtx(ex)
   vertexm(ex, il)
 end
