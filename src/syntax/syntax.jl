@@ -31,7 +31,7 @@ end
 
 # Function / expression macros
 
-export @flow, @dvertex
+export @flow, @iflow, @dvertex, @ivertex
 
 function inputsm(args)
   bindings = d()
@@ -54,14 +54,30 @@ function flow_func(ex)
   :($(esc(name)) = $(SyntaxGraph(args, output)))
 end
 
-macro flow(ex)
+function flowm(ex, f = dl)
   isdef(ex) && return flow_func(ex)
-  g = graphm(rmlines(block(ex)).args)
+  g = graphm(block(ex))
   g = mapconst(x -> isexpr(x, :$) ? esc(x.args[1]) : Expr(:quote, x), g)
-  @>> g constructor
+  constructor(f(g))
+end
+
+macro flow(ex)
+  flowm(ex)
+end
+
+macro flow(ex)
+  flowm(ex, il)
+end
+
+function vertexm(ex, f = dl)
+  exs = graphm(block(ex))
+  @>> exs graphm mapconst(esc) f constructor
 end
 
 macro dvertex(ex)
-  exs = rmlines(block(ex)).args
-  @>> exs graphm mapconst(esc) constructor
+  vertexm(ex)
+end
+
+macro ivertex(ex)
+  vertexm(ex, il)
 end
