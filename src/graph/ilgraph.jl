@@ -32,7 +32,7 @@ function walk!(v::IVertex, pre, post, cache = ODict())
   haskey(cache, v) && return cache[v]::typeof(v)
   cache[v] = v′ = pre(v)
   map!(v -> walk!(v, pre, post, cache), v′.inputs)
-  return post(v′)
+  cache[v] = post(v′)
 end
 
 prewalk!(f, v::IVertex) = walk!(v, f, identity)
