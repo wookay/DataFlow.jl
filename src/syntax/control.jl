@@ -48,4 +48,6 @@ end
 
 tocall(::Group, args...) = :($(args...),)
 
+tocall(s::Split, x) = :($x[$(s.n)])
+
 group(xs...) = vertex(Group(), xs...)
