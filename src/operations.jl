@@ -8,6 +8,16 @@ function cse(vs::Vector)
   [cse(v, cache) for v in vs]
 end
 
+function duplicates(v::IVertex)
+  cache = Dict{typeof(v),Int}()
+  prewalk(v) do v
+    cache[v] = get!(cache, v, 0) + 1
+    v
+  end
+  cache = filter((_,n) -> n > 1, cache)
+  cache = filter((v,_) -> !any(v′ -> v′ ≠ v && contains(v′, v), keys(cache)), cache)
+end
+
 function Base.contains(haystack::IVertex, needle::IVertex)
   result = false
   prewalk(haystack) do v
