@@ -64,8 +64,6 @@ function hash(v::IVertex, h::UInt = UInt(0), seen = OSet())
   return h
 end
 
-==(a::IVertex, b::IVertex) = hash(a) == hash(b)
-
 function iscyclic(v::IVertex)
   is = false
   prefor(v -> is |= ↺(v), v)
