@@ -29,8 +29,6 @@ function syntax(head::DVertex; bindconst = !isfinal(head))
   return ex
 end
 
-# TODO: handle pre-constructor references
-
 function constructor(g)
   vertex = isa(g, DVertex) ? :dvertex : :vertex
   g = mapv(g) do v
@@ -44,11 +42,14 @@ function constructor(g)
     v
   end
   ex = syntax(g)
-  ex′ = :(;)
+  decls, exs = [], []
   for x in block(ex).args
-    @capture(x, v_ = $vertex(f_, a__)) && inexpr(x.args[2], v) ?
-      push!(ex′.args, :($v = $vertex($f)), :(thread!($v, $(a...)))) :
-      push!(ex′.args, x)
+    if @capture(x, v_ = $vertex(f_, a__))
+      push!(decls, :($v = $vertex($f)))
+      push!(exs, :(thread!($v, $(a...))))
+    else
+      push!(exs, x)
+    end
   end
-  return ex′
+  return :($(decls...);$(exs...))
 end
