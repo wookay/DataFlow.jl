@@ -1,31 +1,14 @@
-# Фло
+# DataFlow.jl
 
 [![Build Status](https://travis-ci.org/MikeInnes/DataFlow.jl.svg?branch=master)](https://travis-ci.org/MikeInnes/DataFlow.jl) [![Coverage Status](https://coveralls.io/repos/github/MikeInnes/DataFlow.jl/badge.svg?branch=master)](https://coveralls.io/github/MikeInnes/DataFlow.jl?branch=master)
 
-DataFlow is a Julia library providing data structures and algorithms for expressing and manipulating directed cyclic multigraphs, designed as a toolkit for building embedded languages with dataflow semantics.
+DataFlow.jl is a bit like [MacroTools](https://github.com/MikeInnes/MacroTools.jl), but instead of working with programs as expression trees, it works with them as dataflow graphs.
 
-> Say what now?
+A data flow graph is a bit like an expression tree without variables; functions always refer to their inputs directly. Underneath it's a directed graph linking the output of one function call to the input of another. DataFlow.jl provides functions like `prewalk` and `postwalk` which allow you to do crazy graph-restructuring operations with minimal code, *even on cyclic graphs*. Think algorithms like common subexpression elimination implemented in [one line](https://github.com/MikeInnes/DataFlow.jl/blob/d5899a47ed052190e655afdf1510e021ad95d09d/src/operations.jl#L2) rather than hundreds.
 
-What's the common thread among frameworks for things like parallel computing (Spark, ComputeFramework), machine learning (Theano, TensorFlow), hardware modeling and simulation (LabVIEW, Simulink), and so on? The answer is that they all take advantage of some kind of *dataflow* semantics. Instead of dealing with variables, state and updates, they explicitly model the flow of data through various operations in the program. This is well founded, as it allows for all kinds of nice things like eliding memory allocations, automatically differentiating equations, and exploiting opportunities for parallelism.
+DataFlow.jl also provides a common syntax for representing dataflow graphs. This can be used by other packages (like [Flux](https://github.com/MikeInnes/Flux.jl)) to provide a common, intuitive way to work with embedded graphical DSLs. This approach could be applied to an extremely wide range of domains, like graphical modelling in statistics and machine learning, parallel  and distributed computing or hardware modelling and simulation.
 
-At its most basic, DataFlow is a shared set of functionality for building such frameworks, providing the tools to represent programs and implement common optimisations. But it's also designed to solve a much deeper problem. Many of the frameworks above implement their own custom language and embed it into a host like Scala or Python, but that language then lacks fundamental features like syntax or functions. In their place, you build and evaluate expression trees by hand, something analogous to:
-
-```julia
-f(x) = :($x + $x)
-f(2) == :(2+2)
-eval(f(2)) == 4
-```
-
-You can pull off a few hacks to make this style convenient, of course, but fundamentally it's a hassle for both the human and the compiler. One of DataFlow's key goals is to enable framework designers to return from a "building expression trees" API to a "functions + data" one, making the programming more intuitive and composable for the user, and easier to implement for the developer.
-
-Key goals:
-
-* Consistent APIs, code sharing, and interoperability across dataflow-based frameworks
-* A dataflow programming model consistent with the host language
-* Tight integration with the host, including transparent, bi-directional interop
-* Equation salvation from the `tf.matmul`/`tf.add` tf.tarpit
-
-## Examples
+## Basic Examples
 
 Consider a simple function for calculating variance:
 
@@ -63,8 +46,8 @@ Another unusual feature of DataFlow is that it supports cycles, for example:
 end
 ```
 
-This is not valid Julia, since `hidden` must be defined before it is used. In DataFlow this is simply represented as a graph like the following:
+This is not valid Julia, since `hidden` must be defined before it is used. In DataFlow.jl this is simply represented as a graph like the following:
 
 ![](static/recurrent.png)
 
-Applications that build on DataFlow can decide what meaning to give to structures like this. For example, an ANN library might unroll the network a given number of steps at a cycle, enabling recurrent neural network architectures to be easily expressed.
+Applications that build on DataFlow.jl can decide what meaning to give to structures like this. For example, an ANN library might unroll the network a given number of steps at a cycle, enabling recurrent neural network architectures to be easily expressed.
