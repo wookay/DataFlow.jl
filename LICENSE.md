@@ -1,4 +1,4 @@
-The Flow.jl package is licensed under the MIT "Expat" License:
+The DataFlow.jl package is licensed under the MIT "Expat" License:
 
 > Copyright (c) 2016: Mike Innes.
 >

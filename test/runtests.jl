@@ -1,7 +1,7 @@
-using Flow, Flow.Fuzz
+using DataFlow, DataFlow.Fuzz
 using MacroTools, Lazy, Base.Test
 
-import Flow: graphm, syntax, cse, dvertex, constant, prewalk
+import DataFlow: graphm, syntax, cse, dvertex, constant, prewalk
 
 for nodes = 1:10, tries = 1:1_000
 
@@ -13,7 +13,7 @@ for nodes = 1:10, tries = 1:1_000
 
   il = grow(IVertex, nodes)
 
-  @test il == @> il Flow.dl() Flow.il()
+  @test il == @> il DataFlow.dl() DataFlow.il()
 
   @test copy(il) == il == prewalk(identity, il)
 

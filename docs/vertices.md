@@ -1,10 +1,10 @@
-Flow provides two things, a graph data structure and a common syntax for describing graphs. You're not tied down to using either of these things; you could use the syntax and immediately convert graphs to an adjacency matrix for processing, for example, or you could generate the graphs through other means while taking advantage of Flow's library of common graph operations.
+DataFlow provides two things, a graph data structure and a common syntax for describing graphs. You're not tied down to using either of these things; you could use the syntax and immediately convert graphs to an adjacency matrix for processing, for example, or you could generate the graphs through other means while taking advantage of DataFlow's library of common graph operations.
 
-Flow explicitly keeps the data structure very simple and doesn't try to attach any kind of meaning to it. The graphs could represent straightforward Julia programs, or Bayesian networks, or an electrical circuit. Libraries using Flow will probably want to extend the syntax and manipulate the graph in order to generate appropriate code for the application.
+DataFlow explicitly keeps the data structure very simple and doesn't try to attach any kind of meaning to it. The graphs could represent straightforward Julia programs, or Bayesian networks, or an electrical circuit. Libraries using DataFlow will probably want to extend the syntax and manipulate the graph in order to generate appropriate code for the application.
 
 ## Data Structures
 
-Flow actually comes with two related data structures, the `DVertex` and the `IVertex`. Both represent nodes in a graph with inputs/outputs to/from other nodes in the graph. `IVertex` is input-linked, somewhat like a linked list – it keeps a reference to nodes which serve as input. `DVertex` is doubly-linked, analogous to a doubly-linked list – it refers to its input as well as all the nodes which take it as input. DVertex are technically more expressive but are also much harder to work with, so it's usually best to convert to input-linked as soon as possible (via `Flow.il()` for example).
+DataFlow actually comes with two related data structures, the `DVertex` and the `IVertex`. Both represent nodes in a graph with inputs/outputs to/from other nodes in the graph. `IVertex` is input-linked, somewhat like a linked list – it keeps a reference to nodes which serve as input. `DVertex` is doubly-linked, analogous to a doubly-linked list – it refers to its input as well as all the nodes which take it as input. DVertex are technically more expressive but are also much harder to work with, so it's usually best to convert to input-linked as soon as possible (via `DataFlow.il()` for example).
 
 ```julia
 type IVertex{T} <: Vertex{T}
@@ -21,14 +21,14 @@ Expr(:call, :+, x, Expr(:call, :length, :xs))
 IVertex(:+, IVertex(:x), IVertex(:length, IVertex(:xs)))
 ```
 
-The key difference is that *object identity* is important in Flow graphs. Say we build an expression tree like this:
+The key difference is that *object identity* is important in DataFlow graphs. Say we build an expression tree like this:
 
 ```julia
 foo = Expr(:call, :length, :xs)
 Expr(:call, :+, foo, foo)
 ```
 
-This prints as `length(xs)+length(xs)` regardless of the fact that we reused the `length(xs)` expression object. In Flow the reuse makes a big difference:
+This prints as `length(xs)+length(xs)` regardless of the fact that we reused the `length(xs)` expression object. In DataFlow the reuse makes a big difference:
 
 ```julia
 g = IVertex{Any}
@@ -47,7 +47,7 @@ The reuse is now encoded in the program graph. Note that the data structure abov
 
 ## Algorithms
 
-The basic approach to working with Flow graphs is to use the same techniques as are used for trees in functional programming. That is, you can write algorithms which generate a new graph by recursively walking over the old one. This is packaged up in functions like `prewalk` and `postwalk` which allow you apply a function to each node in the graph.
+The basic approach to working with DataFlow graphs is to use the same techniques as are used for trees in functional programming. That is, you can write algorithms which generate a new graph by recursively walking over the old one. This is packaged up in functions like `prewalk` and `postwalk` which allow you apply a function to each node in the graph.
 
 For example:
 
@@ -80,7 +80,7 @@ cse(foo)
   ram + ram)
 ```
 
-Generally you should be able to stick to using Flow's high-level operations like `postwalk`, but in some cases you may need to write a recursive algorithm from scratch. This looks exactly like writing the same algorithm over a tree, with the caveats that (1) identical nodes may be reached by more than one route down the tree and (2) there may be cycles in the graph which cause infinite loops for naive recursion. This sounds like a nightmare but in fact we can kill these two tricky birds with a single stone; we simply memoize the function so that visiting repeated nodes ends the recursion. Make sure to cache the result of the current call *before* recursing.
+Generally you should be able to stick to using DataFlow's high-level operations like `postwalk`, but in some cases you may need to write a recursive algorithm from scratch. This looks exactly like writing the same algorithm over a tree, with the caveats that (1) identical nodes may be reached by more than one route down the tree and (2) there may be cycles in the graph which cause infinite loops for naive recursion. This sounds like a nightmare but in fact we can kill these two tricky birds with a single stone; we simply memoize the function so that visiting repeated nodes ends the recursion. Make sure to cache the result of the current call *before* recursing.
 
 ```julia
 function replace_xs(g, cache = ObjectIdDict())
@@ -93,7 +93,7 @@ function replace_xs(g, cache = ObjectIdDict())
   thread!(g′, (replace_xs(v, cache) for v in inputs(g))...)
 end
 
-foo = Flow.cse(@flow length(xs)+length(xs))
+foo = DataFlow.cse(@flow length(xs)+length(xs))
 > IVertex(
   ant = length(xs)
   ant + ant)

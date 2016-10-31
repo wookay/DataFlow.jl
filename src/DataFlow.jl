@@ -1,4 +1,4 @@
-module Flow
+module DataFlow
 
 using Lazy, MacroTools, Juno
 
