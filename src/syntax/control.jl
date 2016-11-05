@@ -29,7 +29,7 @@ immutable Split
   n::Int
 end
 
-# TODO: reverse this when printing
+# TODO: printing
 function normgroups(ex)
   MacroTools.prewalk(ex) do ex
     if @capture(ex, (xs__,) = y_)
@@ -51,3 +51,17 @@ tocall(::Group, args...) = :($(args...),)
 tocall(s::Split, x) = :($x[$(s.n)])
 
 group(xs...) = vertex(Group(), xs...)
+
+# TODO: printing
+
+immutable Bind
+  name::Symbol
+end
+
+function insertbinds(ex)
+  ls = map(ex.args) do l
+    @capture(l, x_ = y_) || return l
+    :($x = $(Bind(x))($y))
+  end
+  :($(ls...);)
+end
