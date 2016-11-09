@@ -23,6 +23,8 @@ type Do end
 
 tocall(::Do, a...) = :($(a...);)
 
+# Static tuples
+
 immutable Group end
 
 immutable Split
@@ -52,16 +54,63 @@ tocall(s::Split, x) = :($x[$(s.n)])
 
 group(xs...) = vertex(Group(), xs...)
 
-# TODO: printing
+function detuple(v::IVertex)
+  postwalk(v) do v
+    if isa(value(v), Split) && isa(value(v[1]), Group)
+      v[1][value(v).n]
+    else
+      v
+    end
+  end
+end
+
+# Bindings
 
 immutable Bind
   name::Symbol
 end
 
+# TODO: printing
 function insertbinds(ex)
   ls = map(ex.args) do l
     @capture(l, x_ = y_) || return l
     :($x = $(Bind(x))($y))
   end
   :($(ls...);)
+end
+
+# Inputs
+
+immutable Input end
+
+splitnode(v, n) = vertex(Split(n), v)
+
+inputnode(n) = splitnode(constant(Input()), n)
+
+isinput(v::IVertex) = isa(value(v), Split) && value(v[1]) == Constant(Input())
+
+function bumpinputs(v::IVertex)
+  prewalk(v) do v
+    isinput(v) ?
+      inputnode(value(v).n + 1) :
+      v
+  end
+end
+
+function spliceinput(v::IVertex, input::IVertex)
+  postwalk(v) do v
+    value(v) == Constant(Input()) ? input : v
+  end
+end
+
+spliceinputs(v::IVertex, inputs::Vertex...) =
+  spliceinput(v, vertex(Group(), inputs...))
+
+function graphinputs(v::IVertex)
+  n = 0
+  prewalk(v) do v
+    isinput(v) && (n = max(n, value(v).n))
+    v
+  end
+  return n
 end
