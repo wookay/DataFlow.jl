@@ -6,7 +6,7 @@ type LateVertex{T}
 end
 
 function normedges(ex)
-  ex = @> ex normgroups MacroTools.flatten rmlines
+  ex = @> ex normclosures normgroups MacroTools.flatten block rmlines
   map!(ex.args) do ex
     @capture(ex, _ = _) ? ex : :($(gensym("edge")) = $ex)
   end

@@ -25,8 +25,8 @@ tocall(::Do, a...) = :($(a...);)
 
 # Static tuples
 
+# TODO: just use `getindex` and `tuple` to represent these?
 immutable Group end
-
 immutable Split
   n::Int
 end
@@ -113,4 +113,23 @@ function graphinputs(v::IVertex)
     v
   end
   return n
+end
+
+# Closures
+
+immutable Flosure end
+immutable LooseEnd end
+
+# TODO: scope
+function normclosures(ex)
+  MacroTools.prewalk(shortdef(ex)) do ex
+    @capture(ex, (args__,) -> body_) || return ex
+    @assert all(arg -> isa(arg, Symbol), args)
+    body = MacroTools.prewalk(body) do ex
+      ex in args ?
+        Expr(:call, Split(findfirst(x->x==ex, args)), LooseEnd()) :
+        ex
+    end
+    :($(Flosure())($body))
+  end |> MacroTools.flatten
 end
