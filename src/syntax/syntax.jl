@@ -2,7 +2,7 @@ import Base: @get!
 
 include("read.jl")
 include("dump.jl")
-include("control.jl")
+include("sugar.jl")
 
 # Display
 
