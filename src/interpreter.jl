@@ -48,10 +48,10 @@ function interplambda(f)
   interp(args...) = f(args...)
 end
 
-interpid =
+const interpid =
   interpconst((ctx, f, xs...) -> vertex(f, map(constant, interpret(ctx, xs))...))
 
-interpeval =
+const interpeval =
   interplambda(interpconst(interptuple((ctx, f, xs...) -> f(interpret(ctx, xs)...))))
 
 interpret(graph::IVertex, args...) =
