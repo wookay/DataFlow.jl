@@ -11,10 +11,13 @@ Context(interp; kws...) = Context(interp, ObjectIdDict(), Dict{Symbol,Any}(kws))
 Base.getindex(ctx::Context, k::Symbol) = ctx.data[k]
 Base.setindex!(ctx::Context, v, k::Symbol) = ctx.data[k] = v
 
-function interpret(ctx::Context, graph::IVertex, inputs...)
-  graph = spliceinputs(graph, map(constant, inputs)...)
+function interpret(ctx::Context, graph::IVertex, args::IVertex...)
+  graph = spliceinputs(graph, args...)
   interpret(ctx, graph)
 end
+
+interpret(ctx::Context, graph::IVertex, args...) =
+  interpret(ctx, graph, map(constant, args)...)
 
 function interpret(ctx::Context, graph::IVertex)
   haskey(ctx.cache, graph) && return ctx.cache[graph]
@@ -39,3 +42,6 @@ end
 interpnull(ctx, f, xs...) = vertex(f, interpret(ctx, xs)...)
 
 const interpeval = interpconst(interptuple((ctx, f, xs...) -> f(interpret(ctx, xs)...)))
+
+interpret(graph::IVertex, args...) =
+  interpret(Context(interpeval), graph, args...)
