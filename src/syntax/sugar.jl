@@ -136,3 +136,5 @@ function normclosures(ex)
     :($(Flosure())($body, $(closed...)))
   end
 end
+
+flopen(v::IVertex) = mapconst(x->x==LooseEnd()?Input():x,v)

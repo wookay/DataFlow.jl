@@ -30,18 +30,29 @@ interpret(ctx::Context, xs::Tuple) = map(x -> interpret(ctx, x), xs)
 
 function interpconst(f)
   interp(ctx::Context, x::Constant) = x.value
-  interp(ctx::Context, xs...) = f(ctx, xs...)
+  interp(args...) = f(args...)
 end
 
 function interptuple(f)
   interp(ctx::Context, ::Group, xs...) = tuple(interpret(ctx, xs)...)
-  interp(ctx::Context, s::Split, xs) = interpret(ctx, xs)[s.n]
-  interp(ctx::Context, xs...) = f(ctx, xs...)
+  function interp(ctx::Context, s::Split, xs)
+    xs = interpret(ctx, xs)
+    isa(xs, Tuple) ? xs[s.n] : f(ctx, s, constant(xs))
+  end
+  interp(args...) = f(args...)
 end
 
-interpnull(ctx, f, xs...) = vertex(f, interpret(ctx, xs)...)
+function interplambda(f)
+  interp(ctx::Context, f::Flosure, body, vars...) =
+    (xs...) -> interpret(ctx, flopen(body), vars..., xs...)
+  interp(args...) = f(args...)
+end
 
-const interpeval = interpconst(interptuple((ctx, f, xs...) -> f(interpret(ctx, xs)...)))
+interpid =
+  interpconst((ctx, f, xs...) -> vertex(f, map(constant, interpret(ctx, xs))...))
+
+interpeval =
+  interplambda(interpconst(interptuple((ctx, f, xs...) -> f(interpret(ctx, xs)...))))
 
 interpret(graph::IVertex, args...) =
   interpret(Context(interpeval), graph, args...)
