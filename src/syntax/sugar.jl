@@ -134,5 +134,5 @@ function normclosures(ex)
         ex
     end
     :($(Flosure())($body, $(closed...)))
-  end |> MacroTools.flatten
+  end
 end

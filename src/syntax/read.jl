@@ -14,6 +14,7 @@ function bindings(ex)
 end
 
 function normedges(ex)
+  ex = rmlines(ex)
   map!(ex.args) do ex
     @capture(ex, _ = _) ? ex : :($(gensym("edge")) = $ex)
   end
@@ -21,7 +22,7 @@ function normedges(ex)
 end
 
 normalise(ex) =
-  @> ex normedges normclosures MacroTools.flatten block rmlines
+  @> ex normclosures MacroTools.flatten block normedges
 
 function latenodes(exs)
   bindings = d()
