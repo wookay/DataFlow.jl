@@ -5,6 +5,14 @@ type LateVertex{T}
   args::Vector{Any}
 end
 
+function bindings(ex)
+  bs = []
+  for ex in ex.args
+    @capture(ex, x_ = _) && push!(bs, x)
+  end
+  return bs
+end
+
 function normedges(ex)
   map!(ex.args) do ex
     @capture(ex, _ = _) ? ex : :($(gensym("edge")) = $ex)

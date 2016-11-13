@@ -122,14 +122,17 @@ immutable LooseEnd end
 
 # TODO: scope
 function normclosures(ex)
+  bs = bindings(ex)
   MacroTools.prewalk(shortdef(ex)) do ex
     @capture(ex, (args__,) -> body_) || return ex
     @assert all(arg -> isa(arg, Symbol), args)
+    closed = filter(x -> inexpr(body, x), bs)
+    vars = vcat(closed, args)
     body = MacroTools.prewalk(body) do ex
-      ex in args ?
-        Expr(:call, Split(findfirst(x->x==ex, args)), LooseEnd()) :
+      ex in vars ?
+        Expr(:call, Split(findfirst(x->x==ex, vars)), LooseEnd()) :
         ex
     end
-    :($(Flosure())($body))
+    :($(Flosure())($body, $(closed...)))
   end |> MacroTools.flatten
 end
