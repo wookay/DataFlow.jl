@@ -6,12 +6,14 @@ type LateVertex{T}
 end
 
 function normedges(ex)
-  ex = @> ex normclosures normgroups MacroTools.flatten block rmlines
   map!(ex.args) do ex
     @capture(ex, _ = _) ? ex : :($(gensym("edge")) = $ex)
   end
   return ex
 end
+
+normalise(ex) =
+  @> ex normedges normclosures MacroTools.flatten block rmlines
 
 function latenodes(exs)
   bindings = d()
@@ -53,7 +55,7 @@ function fillnodes!(bindings)
 end
 
 function graphm(bindings, exs::Vector)
-  exs = normedges(:($(exs...);)).args
+  exs = normalise(:($(exs...);)).args
   @capture(exs[end], result_Symbol = _)
   merge!(bindings, latenodes(exs))
   fillnodes!(bindings)
