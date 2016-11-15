@@ -31,21 +31,23 @@ immutable Split
   n::Int
 end
 
-# TODO: printing
 function normgroups(ex)
   MacroTools.prewalk(ex) do ex
-    if @capture(ex, (xs__,) = y_)
-      edge = gensym("edge")
-      quote
-        $edge = $y
-        $((:($(xs[i]) = $(Split(i))($edge)) for i = 1:length(xs))...)
-      end
-    elseif @capture(ex, (xs__,))
-      :($(Group())($(xs...)))
-    else
-      ex
-    end
+    @capture(ex, (xs__,)) || return ex
+    :($(Group())($(xs...)))
   end
+end
+
+# TODO: printing
+function normsplits(ex)
+  MacroTools.prewalk(ex) do ex
+    @capture(ex, (xs__,) = y_) || return ex
+    @gensym edge
+    quote
+      $edge = $y
+      $((:($(xs[i]) = $(Split(i))($edge)) for i = 1:length(xs))...)
+    end
+  end |> MacroTools.flatten |> block
 end
 
 tocall(::Group, args...) = :($(args...),)
@@ -134,7 +136,7 @@ function normclosures(ex)
         ex
     end
     :($(Flosure())($body, $(closed...)))
-  end
+  end |> MacroTools.flatten |> block
 end
 
 flopen(v::IVertex) = mapconst(x->x==LooseEnd()?Input():x,v)

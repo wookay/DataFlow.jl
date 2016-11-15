@@ -22,7 +22,7 @@ function normedges(ex)
 end
 
 normalise(ex) =
-  @> ex normclosures MacroTools.flatten block normedges
+  @> ex normsplits normclosures normgroups normedges
 
 function latenodes(exs)
   bindings = d()
