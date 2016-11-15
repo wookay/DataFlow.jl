@@ -34,10 +34,11 @@ function interpconst(f)
 end
 
 function interptuple(f)
-  interp(ctx::Context, ::Group, xs...) = tuple(interpret(ctx, xs)...)
   function interp(ctx::Context, s::Split, xs)
     xs = interpret(ctx, xs)
-    isa(xs, Tuple) ? xs[s.n] : f(ctx, s, constant(xs))
+    isa(xs, Vertex) && value(xs) == tuple ? inputs(xs)[s.n] :
+    isa(xs, Tuple) ? xs[s.n] :
+    f(ctx, s, constant(xs))
   end
   interp(args...) = f(args...)
 end

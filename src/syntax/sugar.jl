@@ -26,7 +26,6 @@ tocall(::Do, a...) = :($(a...);)
 # Static tuples
 
 # TODO: just use `getindex` and `tuple` to represent these?
-immutable Group end
 immutable Split
   n::Int
 end
@@ -34,7 +33,7 @@ end
 function normgroups(ex)
   MacroTools.prewalk(ex) do ex
     @capture(ex, (xs__,)) || return ex
-    :($(Group())($(xs...)))
+    :(tuple($(xs...)))
   end
 end
 
@@ -50,15 +49,15 @@ function normsplits(ex)
   end |> MacroTools.flatten |> block
 end
 
-tocall(::Group, args...) = :($(args...),)
+tocall(::typeof(tuple), args...) = :($(args...),)
 
 tocall(s::Split, x) = :($x[$(s.n)])
 
-group(xs...) = vertex(Group(), xs...)
+group(xs...) = vertex(tuple, xs...)
 
 function detuple(v::IVertex)
   postwalk(v) do v
-    if isa(value(v), Split) && isa(value(v[1]), Group)
+    if isa(value(v), Split) && value(v[1]) == tuple
       v[1][value(v).n]
     else
       v
@@ -106,7 +105,7 @@ function spliceinput(v::IVertex, input::IVertex)
 end
 
 spliceinputs(v::IVertex, inputs::Vertex...) =
-  spliceinput(v, vertex(Group(), inputs...))
+  spliceinput(v, group(inputs...))
 
 function graphinputs(v::IVertex)
   n = 0
