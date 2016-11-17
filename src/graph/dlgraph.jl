@@ -44,6 +44,8 @@ end
 
 isfinal(v::Vertex) = nout(v) == 0
 
+isdefined(Base, :Iterators) && import Base.Iterators: filter
+
 function equal(a::Vertex, b::Vertex, seen = OSet())
   (a, b) ∈ seen && return true
   (value(a) == value(b) &&
