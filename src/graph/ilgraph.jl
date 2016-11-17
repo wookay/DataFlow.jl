@@ -59,7 +59,12 @@ function hash(v::IVertex, h::UInt = UInt(0), seen = OSet())
   h = hash(value(v), h)
   v in seen ? (return h) : push!(seen, v)
   for n in inputs(v)
-    h $= hash(n, h, seen)
+    # julia #18977
+    if isdefined(Base, :xor)
+      h = Base.xor(h, hash(n, h, seen))
+    else
+      h $= hash(n, h, seen)
+    end
   end
   return h
 end
